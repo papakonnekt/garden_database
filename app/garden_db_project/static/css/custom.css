@@ -1,0 +1,226 @@
+/* Custom styles for Garden Database */
+
+/* Color scheme */
+:root {
+    --primary-color: #2e7d32;
+    --primary-light: #60ad5e;
+    --primary-dark: #005005;
+    --secondary-color: #ffa000;
+    --secondary-light: #ffd149;
+    --secondary-dark: #c67100;
+    --text-on-primary: #ffffff;
+    --text-on-secondary: #000000;
+}
+
+/* General styles */
+body {
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Header and navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: var(--primary-color) !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--primary-dark) !important;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background-color: #e8f5e9;
+    border-radius: 0.5rem;
+}
+
+/* Cards */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: #e8f5e9;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-success {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-success {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: var(--primary-color);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Footer */
+.footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Detail pages */
+.plant-header {
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 0.5rem;
+    margin-bottom: 20px;
+}
+
+/* Search results */
+.search-highlight {
+    background-color: #fff9c4;
+    padding: 0 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 150px;
+    }
+}
+
+/* Custom icons */
+.icon-plant {
+    color: var(--primary-color);
+}
+
+.icon-pest {
+    color: #d32f2f;
+}
+
+.icon-disease {
+    color: #c2185b;
+}
+
+.icon-seed {
+    color: var(--secondary-color);
+}
+
+/* Tables */
+.table th {
+    background-color: #f1f8e9;
+}
+
+/* Badges */
+.badge-primary {
+    background-color: var(--primary-color);
+}
+
+.badge-secondary {
+    background-color: var(--secondary-color);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+    color: var(--primary-dark);
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border-color: #bbdefb;
+    color: #0d47a1;
+}
+
+/* Form controls */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.25);
+}
+
+/* Custom classes for plant attributes */
+.attribute-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.attribute-value {
+    color: #333;
+}
+
+/* Companion planting indicators */
+.companion-good {
+    color: var(--primary-color);
+}
+
+.companion-bad {
+    color: #d32f2f;
+}
+
+.companion-neutral {
+    color: #757575;
+}

@@ -1,0 +1,323 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}Bulk Import - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Bulk Import</h1>
+        <p class="lead">Import multiple records at once by uploading a JSON file.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Upload JSON File</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="entity_type" class="form-label">Entity Type</label>
+                        <select class="form-select" id="entity_type" name="entity_type" required>
+                            <option value="" selected disabled>Select entity type</option>
+                            <option value="comprehensive">Comprehensive (Plants, Companions & Pests)</option>
+                            <option value="plant">Plants</option>
+                            <option value="seed">Seeds</option>
+                            <option value="pest">Pests</option>
+                            <option value="disease">Diseases</option>
+                            <option value="region">Regions</option>
+                            <option value="soil_profile">Soil Profiles</option>
+                            <option value="fertilizer">Fertilizers</option>
+                            <option value="companionship">Companion Relationships</option>
+                        </select>
+                        <div class="form-text">Select the type of data you want to import.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="json_file" class="form-label">JSON File</label>
+                        <input class="form-control" type="file" id="json_file" name="json_file" accept="application/json" required>
+                        <div class="form-text">Upload a JSON file containing the data to import.</div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="update_existing" name="update_existing">
+                        <label class="form-check-label" for="update_existing">Update existing records</label>
+                        <div class="form-text">If checked, existing records will be updated. Otherwise, only new records will be created.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Import Data</button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Import Results</h5>
+            </div>
+            <div class="card-body">
+                {% if result.success %}
+                <div class="alert alert-success">
+                    <h4 class="alert-heading">Import Successful!</h4>
+                    <p>{{ result.message }}</p>
+                    <hr>
+                    <p class="mb-0">
+                        <strong>Created:</strong> {{ result.created }}<br>
+                        <strong>Updated:</strong> {{ result.updated }}<br>
+                        <strong>Skipped:</strong> {{ result.skipped }}<br>
+                        <strong>Total:</strong> {{ result.total }}
+                    </p>
+                </div>
+                {% else %}
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Import Failed</h4>
+                    <p>{{ result.message }}</p>
+                    {% if result.errors %}
+                    <hr>
+                    <h5>Errors:</h5>
+                    <ul>
+                        {% for error in result.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">JSON Format</h5>
+            </div>
+            <div class="card-body">
+                <p>Your JSON file should contain an array of objects with the appropriate fields for the selected entity type.</p>
+
+                <div class="accordion" id="jsonExamplesAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingComprehensive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComprehensive" aria-expanded="false" aria-controls="collapseComprehensive">
+                                Comprehensive Example (Recommended)
+                            </button>
+                        </h2>
+                        <div id="collapseComprehensive" class="accordion-collapse collapse" aria-labelledby="headingComprehensive" data-bs-parent="#jsonExamplesAccordion">
+                            <div class="accordion-body">
+                                <pre class="bg-light p-3 rounded"><code>{
+  "plants": [
+    {
+      "common_name": "Corn",
+      "scientific_name": "Zea mays",
+      "description": "Tall annual grass with elongated stems, large narrow leaves, and edible seeds (kernels) that develop on a cob.",
+      "family": "Poaceae",
+      "genus": "Zea",
+      "species": "mays",
+      "lifecycle_type": "AN",
+      "growth_habit": "HB"
+    },
+    {
+      "common_name": "Bean",
+      "scientific_name": "Phaseolus vulgaris",
+      "description": "Annual legume with climbing or bush growth habit that produces edible pods and seeds.",
+      "family": "Fabaceae",
+      "lifecycle_type": "AN",
+      "growth_habit": "VI"
+    }
+  ],
+  "companion_relationships": [
+    {
+      "plant_subject": "Zea mays",
+      "plant_object": "Phaseolus vulgaris",
+      "interactions": [
+        {
+          "interaction_type": "BEN",
+          "mechanism_description": "Beans fix nitrogen in the soil, which benefits corn, a heavy nitrogen feeder."
+        }
+      ],
+      "notes": "Part of the traditional 'Three Sisters' companion planting method."
+    }
+  ],
+  "pests": [
+    {
+      "common_name": "European Corn Borer",
+      "scientific_name": "Ostrinia nubilalis",
+      "description": "Cream-colored caterpillar with a brown head that tunnels into corn stalks and ears.",
+      "category": "INS",
+      "symptoms": "Broken tassels, holes in stalks with sawdust-like frass.",
+      "affected_plants": ["Zea mays"]
+    }
+  ]
+}</code></pre>
+                                <p class="mt-2"><small class="text-muted">This format allows you to import plants, companion relationships, and pests all at once. It's ideal for adding complete information about a plant and its ecosystem.</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingPlant">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlant" aria-expanded="false" aria-controls="collapsePlant">
+                                Plant Example
+                            </button>
+                        </h2>
+                        <div id="collapsePlant" class="accordion-collapse collapse" aria-labelledby="headingPlant" data-bs-parent="#jsonExamplesAccordion">
+                            <div class="accordion-body">
+                                <pre class="bg-light p-3 rounded"><code>[
+  {
+    "common_name": "Tomato",
+    "scientific_name": "Solanum lycopersicum",
+    "description": "Annual vegetable plant with edible fruits.",
+    "family": "Solanaceae",
+    "lifecycle_type": "AN",
+    "growth_habit": "HB"
+  },
+  {
+    "common_name": "Basil",
+    "scientific_name": "Ocimum basilicum",
+    "description": "Aromatic culinary herb.",
+    "family": "Lamiaceae",
+    "lifecycle_type": "AN",
+    "growth_habit": "HB"
+  }
+]</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSeed">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeed" aria-expanded="false" aria-controls="collapseSeed">
+                                Seed Example
+                            </button>
+                        </h2>
+                        <div id="collapseSeed" class="accordion-collapse collapse" aria-labelledby="headingSeed" data-bs-parent="#jsonExamplesAccordion">
+                            <div class="accordion-body">
+                                <pre class="bg-light p-3 rounded"><code>[
+  {
+    "seed_name": "Beefsteak Tomato Seeds",
+    "plant": "Solanum lycopersicum",
+    "variety": "Beefsteak",
+    "seed_type": "H",
+    "source_brand": "Seed Company",
+    "days_to_germ_min": 7,
+    "days_to_germ_max": 14
+  },
+  {
+    "seed_name": "Sweet Basil Seeds",
+    "plant": "Ocimum basilicum",
+    "variety": "Sweet",
+    "seed_type": "OP",
+    "source_brand": "Herb Seeds Inc",
+    "days_to_germ_min": 5,
+    "days_to_germ_max": 10
+  }
+]</code></pre>
+                                <p class="mt-2"><small class="text-muted">Note: For the "plant" field, use the scientific name of an existing plant.</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingPest">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePest" aria-expanded="false" aria-controls="collapsePest">
+                                Pest Example
+                            </button>
+                        </h2>
+                        <div id="collapsePest" class="accordion-collapse collapse" aria-labelledby="headingPest" data-bs-parent="#jsonExamplesAccordion">
+                            <div class="accordion-body">
+                                <pre class="bg-light p-3 rounded"><code>[
+  {
+    "common_name": "Aphid",
+    "scientific_name": "Aphidoidea",
+    "description": "Small sap-sucking insects.",
+    "category": "INS",
+    "symptoms": "Curled leaves, sticky residue, stunted growth.",
+    "affected_plants": ["Solanum lycopersicum", "Ocimum basilicum"]
+  },
+  {
+    "common_name": "Tomato Hornworm",
+    "scientific_name": "Manduca quinquemaculata",
+    "description": "Large green caterpillar with horn-like projection.",
+    "category": "INS",
+    "symptoms": "Defoliation, fruit damage.",
+    "affected_plants": ["Solanum lycopersicum"]
+  }
+]</code></pre>
+                                <p class="mt-2"><small class="text-muted">Note: For "affected_plants", use scientific names of existing plants.</small></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCompanion">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompanion" aria-expanded="false" aria-controls="collapseCompanion">
+                                Companion Relationship Example
+                            </button>
+                        </h2>
+                        <div id="collapseCompanion" class="accordion-collapse collapse" aria-labelledby="headingCompanion" data-bs-parent="#jsonExamplesAccordion">
+                            <div class="accordion-body">
+                                <pre class="bg-light p-3 rounded"><code>[
+  {
+    "plant_subject": "Solanum lycopersicum",
+    "plant_object": "Ocimum basilicum",
+    "interactions": [
+      {
+        "interaction_type": "BEN",
+        "mechanism_description": "Basil repels tomato hornworm and improves tomato flavor."
+      }
+    ],
+    "notes": "Classic companion planting combination."
+  },
+  {
+    "plant_subject": "Solanum lycopersicum",
+    "plant_object": "Brassica oleracea",
+    "interactions": [
+      {
+        "interaction_type": "DET",
+        "mechanism_description": "Cabbage stunts tomato growth."
+      }
+    ],
+    "notes": "Keep these plants separated."
+  }
+]</code></pre>
+                                <p class="mt-2"><small class="text-muted">Note: For "plant_subject" and "plant_object", use scientific names of existing plants.</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Make sure your JSON is properly formatted. You can use online validators to check.</li>
+                    <li>For relationships (like plants to seeds), use existing identifiers (scientific names for plants).</li>
+                    <li>Large imports may take some time to process.</li>
+                    <li>Consider breaking very large datasets into smaller chunks.</li>
+                    <li>Back up your database before performing large imports.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">API Alternative</h5>
+            </div>
+            <div class="card-body">
+                <p>For programmatic imports, you can also use our API endpoint:</p>
+                <pre class="bg-light p-3 rounded"><code>POST /api/v1/bulk-import/</code></pre>
+                <p>See the <a href="{% url 'api_docs' %}">API Documentation</a> for more details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}Companion Planting - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Companion Planting</h1>
+        <p class="lead">Discover which plants grow well together and which ones should be kept apart.</p>
+    </div>
+    <div class="col-auto d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Filter by Interaction
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item" href="?interaction_type=BEN">Beneficial</a></li>
+                <li><a class="dropdown-item" href="?interaction_type=DET">Detrimental</a></li>
+                <li><a class="dropdown-item" href="?interaction_type=NEU">Neutral</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'companion_list' %}">All Interactions</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">What is Companion Planting?</h5>
+    </div>
+    <div class="card-body">
+        <p>Companion planting is the practice of growing certain plants near each other for mutual benefit. Some plants can enhance the growth, flavor, or pest resistance of their neighbors, while others may inhibit growth or attract pests.</p>
+        <p>Use this guide to plan your garden layout for optimal plant health and productivity.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Companion Planting Relationships</h5>
+        <div class="input-group" style="max-width: 300px;">
+            <input type="text" class="form-control" id="companionSearch" placeholder="Search plants...">
+            <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="companionship-table">
+                <thead>
+                    <tr>
+                        <th data-sort="plant1">Plant</th>
+                        <th data-sort="plant2">Companion</th>
+                        <th data-sort="interaction">Relationship</th>
+                        <th>Benefits/Effects</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for companionship in companionships %}
+                    <tr>
+                        <td data-plant1="{{ companionship.plant_subject.common_name }}">
+                            <a href="{% url 'plant_detail' companionship.plant_subject.id %}">{{ companionship.plant_subject.common_name }}</a>
+                        </td>
+                        <td data-plant2="{{ companionship.plant_object.common_name }}">
+                            <a href="{% url 'plant_detail' companionship.plant_object.id %}">{{ companionship.plant_object.common_name }}</a>
+                        </td>
+                        <td data-interaction="{% for interaction in companionship.interactions.all %}{{ interaction.interaction_type }}{% endfor %}">
+                            {% for interaction in companionship.interactions.all %}
+                                {% if interaction.interaction_type == 'BEN' %}
+                                <span class="badge bg-success">Beneficial</span>
+                                {% elif interaction.interaction_type == 'DET' %}
+                                <span class="badge bg-danger">Detrimental</span>
+                                {% elif interaction.interaction_type == 'NEU' %}
+                                <span class="badge bg-secondary">Neutral</span>
+                                {% endif %}
+                                {% if not forloop.last %}<br>{% endif %}
+                            {% empty %}
+                                <span class="badge bg-light text-dark">Not specified</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for interaction in companionship.interactions.all %}
+                                <p>
+                                    {% if interaction.interaction_type == 'BEN' %}
+                                    <span class="text-success"><i class="bi bi-check-circle-fill"></i></span>
+                                    {% elif interaction.interaction_type == 'DET' %}
+                                    <span class="text-danger"><i class="bi bi-x-circle-fill"></i></span>
+                                    {% elif interaction.interaction_type == 'NEU' %}
+                                    <span class="text-secondary"><i class="bi bi-dash-circle-fill"></i></span>
+                                    {% endif %}
+                                    {{ interaction.mechanism_description }}
+                                </p>
+                            {% endfor %}
+                            {% if companionship.notes %}
+                            <small class="text-muted">{{ companionship.notes }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No companion planting relationships found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Beneficial Companions</h5>
+            </div>
+            <div class="card-body">
+                <p>Plants that grow well together and provide mutual benefits:</p>
+                <ul>
+                    <li>Pest repellent</li>
+                    <li>Nutrient enhancement</li>
+                    <li>Improved flavor</li>
+                    <li>Shade or support</li>
+                    <li>Soil improvement</li>
+                    <li>Trap cropping</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">Detrimental Companions</h5>
+            </div>
+            <div class="card-body">
+                <p>Plants that should not be grown together due to negative effects:</p>
+                <ul>
+                    <li>Allelopathy (chemical inhibition)</li>
+                    <li>Competition for resources</li>
+                    <li>Shared pest attraction</li>
+                    <li>Disease susceptibility</li>
+                    <li>Growth inhibition</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Companion Planting Tips</h5>
+            </div>
+            <div class="card-body">
+                <p>Best practices for successful companion planting:</p>
+                <ul>
+                    <li>Consider plant heights and spacing</li>
+                    <li>Rotate companions with crop rotation</li>
+                    <li>Use aromatic herbs throughout the garden</li>
+                    <li>Plant flowers to attract beneficial insects</li>
+                    <li>Consider timing of planting and harvesting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><a class="page-link" href="?page={{ num }}{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.interaction_type %}&interaction_type={{ request.GET.interaction_type }}{% endif %}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Companion search functionality
+        const searchInput = document.getElementById('companionSearch');
+        const searchButton = document.getElementById('searchButton');
+        const table = document.getElementById('companionship-table');
+        const rows = table.querySelectorAll('tbody tr');
+        
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+            
+            rows.forEach(row => {
+                const plant1 = row.querySelector('td[data-plant1]').getAttribute('data-plant1').toLowerCase();
+                const plant2 = row.querySelector('td[data-plant2]').getAttribute('data-plant2').toLowerCase();
+                
+                if (plant1.includes(query) || plant2.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        searchButton.addEventListener('click', filterTable);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

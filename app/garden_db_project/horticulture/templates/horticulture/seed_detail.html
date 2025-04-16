@@ -1,0 +1,269 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}{{ seed.seed_name }} - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ seed.seed_name }}</h1>
+        {% if seed.plant %}
+        <h4 class="text-muted">{{ seed.plant.common_name }} ({{ seed.plant.scientific_name }})</h4>
+        {% endif %}
+        
+        <div class="mb-4">
+            <a href="{% url 'seed_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Seeds
+            </a>
+            {% if seed.plant %}
+            <a href="{% url 'plant_detail' seed.plant.id %}" class="btn btn-outline-primary btn-sm">
+                View Plant Details
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if seed.image_url %}
+        <img src="{{ seed.image_url }}" class="img-fluid rounded" alt="{{ seed.seed_name }}" style="max-height: 200px;">
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Description</h5>
+            </div>
+            <div class="card-body">
+                {% if seed.description %}
+                <p>{{ seed.description }}</p>
+                {% else %}
+                <p class="text-muted">No description available.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Seed Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Seed Name</th>
+                                    <td>{{ seed.seed_name }}</td>
+                                </tr>
+                                {% if seed.variety %}
+                                <tr>
+                                    <th scope="row">Variety</th>
+                                    <td>{{ seed.variety }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.seed_type %}
+                                <tr>
+                                    <th scope="row">Type</th>
+                                    <td>
+                                        {% if seed.seed_type == 'H' %}Heirloom
+                                        {% elif seed.seed_type == 'F1' %}Hybrid (F1)
+                                        {% elif seed.seed_type == 'OP' %}Open-Pollinated
+                                        {% elif seed.seed_type == 'GMO' %}GMO
+                                        {% else %}Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.source_brand %}
+                                <tr>
+                                    <th scope="row">Source/Brand</th>
+                                    <td>{{ seed.source_brand }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.catalogue_id %}
+                                <tr>
+                                    <th scope="row">Catalogue ID</th>
+                                    <td>{{ seed.catalogue_id }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                {% if seed.germination_rate_pct %}
+                                <tr>
+                                    <th scope="row">Germination Rate</th>
+                                    <td>{{ seed.germination_rate_pct }}%</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.viability_period_months %}
+                                <tr>
+                                    <th scope="row">Viability Period</th>
+                                    <td>{{ seed.viability_period_months }} months</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.storage_conditions %}
+                                <tr>
+                                    <th scope="row">Storage Conditions</th>
+                                    <td>{{ seed.storage_conditions }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.days_to_germ_min or seed.days_to_germ_max %}
+                                <tr>
+                                    <th scope="row">Days to Germination</th>
+                                    <td>
+                                        {% if seed.days_to_germ_min and seed.days_to_germ_max %}
+                                            {{ seed.days_to_germ_min }} - {{ seed.days_to_germ_max }} days
+                                        {% elif seed.days_to_germ_min %}
+                                            {{ seed.days_to_germ_min }}+ days
+                                        {% elif seed.days_to_germ_max %}
+                                            Up to {{ seed.days_to_germ_max }} days
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Planting Instructions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                {% if seed.planting_depth_inches %}
+                                <tr>
+                                    <th scope="row">Planting Depth</th>
+                                    <td>{{ seed.planting_depth_inches }} inches</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.spacing_inches %}
+                                <tr>
+                                    <th scope="row">Spacing</th>
+                                    <td>{{ seed.spacing_inches }} inches</td>
+                                </tr>
+                                {% endif %}
+                                {% if seed.optimal_planting_season %}
+                                <tr>
+                                    <th scope="row">Planting Season</th>
+                                    <td>{{ seed.optimal_planting_season }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if seed.recommended_conditions %}
+                        <h6>Recommended Conditions:</h6>
+                        <p>{{ seed.recommended_conditions }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if seed.sowing_instructions_text %}
+                <h6>Sowing Instructions:</h6>
+                <p>{{ seed.sowing_instructions_text }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if seed.packet_info %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Packet Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        {% for key, value in seed.packet_info.items %}
+                        <tr>
+                            <th scope="row">{{ key|title }}</th>
+                            <td>{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        {% if seed.plant %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Plant Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>{{ seed.plant.common_name }}</h6>
+                <p class="text-muted">{{ seed.plant.scientific_name }}</p>
+                
+                {% if seed.plant.description %}
+                <p>{{ seed.plant.description|truncatewords:30 }}</p>
+                {% endif %}
+                
+                <table class="table">
+                    <tbody>
+                        {% if seed.plant.lifecycle_type %}
+                        <tr>
+                            <th scope="row">Lifecycle</th>
+                            <td>
+                                {% if seed.plant.lifecycle_type == 'AN' %}Annual
+                                {% elif seed.plant.lifecycle_type == 'PE' %}Perennial
+                                {% elif seed.plant.lifecycle_type == 'BI' %}Biennial
+                                {% else %}Not specified
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if seed.plant.days_to_maturity_min or seed.plant.days_to_maturity_max %}
+                        <tr>
+                            <th scope="row">Days to Maturity</th>
+                            <td>
+                                {% if seed.plant.days_to_maturity_min and seed.plant.days_to_maturity_max %}
+                                    {{ seed.plant.days_to_maturity_min }} - {{ seed.plant.days_to_maturity_max }} days
+                                {% elif seed.plant.days_to_maturity_min %}
+                                    {{ seed.plant.days_to_maturity_min }}+ days
+                                {% elif seed.plant.days_to_maturity_max %}
+                                    Up to {{ seed.plant.days_to_maturity_max }} days
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if seed.plant.suitable_region %}
+                        <tr>
+                            <th scope="row">Growing Zone</th>
+                            <td>{{ seed.plant.suitable_region.zone_system }} - {{ seed.plant.suitable_region.zone_identifier }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                
+                <a href="{% url 'plant_detail' seed.plant.id %}" class="btn btn-outline-primary">View Full Plant Details</a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Additional Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created:</strong> {{ seed.created_at|date:"F j, Y" }}</p>
+                <p><strong>Last Updated:</strong> {{ seed.updated_at|date:"F j, Y" }}</p>
+                <p><strong>Version:</strong> {{ seed.version }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

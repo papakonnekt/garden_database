@@ -1,0 +1,105 @@
+PLANT RESEARCH PROMPT
+
+Research the plant "[[PLANT_NAME]]" and generate comprehensive data in JSON format for a garden database. Include detailed information about the plant itself, its companion planting relationships, and common pests that affect it.
+
+OUTPUT FORMAT:
+Provide a single JSON object with three main sections: plants, companion_relationships, and pests. The JSON should be properly formatted and ready for direct import into a database.
+
+{
+  "plants": [
+    {
+      // Primary plant (detailed information)
+      "common_name": "String (required)",
+      "scientific_name": "String (required, must be unique)",
+      "description": "String (detailed description)",
+      "family": "String (botanical family)",
+      "genus": "String",
+      "species": "String",
+      "lifecycle_type": "String (AN=Annual, PE=Perennial, BI=Biennial)",
+      "growth_habit": "String (VI=Vine, SH=Shrub, TR=Tree, GC=Groundcover, HB=Herbaceous, BU=Bulb)",
+      "avg_height_inches": Number,
+      "avg_spread_inches": Number,
+      "days_to_maturity_min": Number,
+      "days_to_maturity_max": Number,
+      "sunlight_requirements": "String (FS=Full Sun, PS=Partial Sun, SH=Shade, FD=Full Shade)",
+      "moisture_requirements": "String (LO=Low, MO=Moderate, HI=High, BO=Boggy)",
+      "soil_ph_min": Number (decimal),
+      "soil_ph_max": Number (decimal),
+      "temperature_tolerance_min_f": Number,
+      "temperature_tolerance_max_f": Number,
+      "npk_preference": "String (e.g., '5-10-10')",
+      "root_system_type": "String",
+      "harvest_seasonality": "String",
+      "yield_estimates": "String",
+      "common_names_list": ["String", "String"]
+    },
+    {
+      // Companion plants (basic information)
+      "common_name": "String (required)",
+      "scientific_name": "String (required, must be unique)",
+      "description": "String (brief description)",
+      "family": "String (botanical family)",
+      "lifecycle_type": "String (code)",
+      "growth_habit": "String (code)"
+    }
+    // Add more companion plants as needed
+  ],
+  "companion_relationships": [
+    {
+      "plant_subject": "String (scientific name of primary plant)",
+      "plant_object": "String (scientific name of companion plant)",
+      "interactions": [
+        {
+          "interaction_type": "String (BEN=Beneficial, DET=Detrimental, NEU=Neutral)",
+          "mechanism_description": "String (how the interaction works)"
+        }
+      ],
+      "notes": "String (additional information)"
+    }
+    // Add more relationships as needed
+  ],
+  "pests": [
+    {
+      "common_name": "String (required)",
+      "scientific_name": "String (required)",
+      "description": "String (detailed description)",
+      "category": "String (INS=Insect, MAM=Mammal, MOL=Mollusk, OTH=Other)",
+      "symptoms": "String (plant damage symptoms)",
+      "damage_type": "String (e.g., 'Leaf chewing')",
+      "severity_level": "String (LOW, MED, HIG)",
+      "control_methods": "String (control strategies)",
+      "affected_plants": ["String"] // Scientific names of affected plants
+    }
+    // Add more pests as needed
+  ]
+}
+
+GUIDELINES:
+
+1. PRIMARY PLANT:
+   - Make [[PLANT_NAME]] the first entry in the "plants" array with comprehensive details
+   - Include at least 15 fields for the primary plant
+   - Use accurate botanical information and growing requirements
+
+2. COMPANION PLANTS:
+   - Include both beneficial and detrimental companion plants
+   - For companion plants, provide basic information (common_name, scientific_name, family, etc.)
+   - Each companion plant should have its own entry in the "plants" array
+
+3. RELATIONSHIPS:
+   - In the "companion_relationships" array, document how [[PLANT_NAME]] interacts with each companion
+   - For each relationship, [[PLANT_NAME]] should be the "plant_subject" and the companion the "plant_object"
+   - Explain the mechanism of interaction (e.g., "repels pests", "fixes nitrogen")
+
+4. PESTS:
+   - Include 3-5 common pests that affect [[PLANT_NAME]]
+   - For each pest, include the scientific_name of [[PLANT_NAME]] in the "affected_plants" array
+   - If a pest also affects companion plants, include those scientific names too
+
+5. FORMATTING:
+   - Use proper botanical naming conventions for scientific names (Genus species)
+   - For code fields, use ONLY the specified codes (e.g., "AN" for Annual)
+   - Ensure all JSON is properly formatted with correct syntax
+   - Do not include any explanatory text outside the JSON object
+
+Your response should be a single, valid JSON object that can be directly imported into our garden database.

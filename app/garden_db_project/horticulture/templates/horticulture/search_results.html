@@ -1,0 +1,211 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}Search Results - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Search Results</h1>
+        <p class="lead">Results for "{{ query }}"</p>
+    </div>
+    <div class="col-auto">
+        <form class="d-flex" method="get" action="{% url 'search' %}">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{ query }}">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+{% if plants or seeds or pests or diseases %}
+    {% if plants %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Plants ({{ plants|length }})</h2>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for plant in plants %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if plant.image_url %}
+                        <img src="{{ plant.image_url }}" class="card-img-top" alt="{{ plant.common_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ plant.common_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ plant.scientific_name }}</h6>
+                            <p class="card-text">
+                                {% if plant.description %}
+                                {{ plant.description|truncatewords:20 }}
+                                {% else %}
+                                No description available.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'plant_detail' plant.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if plants_count > plants|length %}
+            <div class="mt-3 text-center">
+                <a href="{% url 'plant_list' %}?q={{ query }}" class="btn btn-outline-primary">View All {{ plants_count }} Plants</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if seeds %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Seeds ({{ seeds|length }})</h2>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for seed in seeds %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if seed.image_url %}
+                        <img src="{{ seed.image_url }}" class="card-img-top" alt="{{ seed.seed_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ seed.seed_name }}</h5>
+                            {% if seed.plant %}
+                            <h6 class="card-subtitle mb-2 text-muted">{{ seed.plant.common_name }}</h6>
+                            {% endif %}
+                            <p class="card-text">
+                                {% if seed.description %}
+                                {{ seed.description|truncatewords:20 }}
+                                {% else %}
+                                No description available.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'seed_detail' seed.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if seeds_count > seeds|length %}
+            <div class="mt-3 text-center">
+                <a href="{% url 'seed_list' %}?q={{ query }}" class="btn btn-outline-primary">View All {{ seeds_count }} Seeds</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if pests %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Pests ({{ pests|length }})</h2>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for pest in pests %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if pest.image_url %}
+                        <img src="{{ pest.image_url }}" class="card-img-top" alt="{{ pest.common_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ pest.common_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ pest.scientific_name }}</h6>
+                            <p class="card-text">
+                                {% if pest.description %}
+                                {{ pest.description|truncatewords:20 }}
+                                {% else %}
+                                No description available.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'pest_detail' pest.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if pests_count > pests|length %}
+            <div class="mt-3 text-center">
+                <a href="{% url 'pest_list' %}?q={{ query }}" class="btn btn-outline-primary">View All {{ pests_count }} Pests</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if diseases %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Diseases ({{ diseases|length }})</h2>
+        </div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for disease in diseases %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if disease.image_url %}
+                        <img src="{{ disease.image_url }}" class="card-img-top" alt="{{ disease.common_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ disease.common_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ disease.scientific_name }}</h6>
+                            <p class="card-text">
+                                {% if disease.description %}
+                                {{ disease.description|truncatewords:20 }}
+                                {% else %}
+                                No description available.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'disease_detail' disease.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if diseases_count > diseases|length %}
+            <div class="mt-3 text-center">
+                <a href="{% url 'disease_list' %}?q={{ query }}" class="btn btn-outline-primary">View All {{ diseases_count }} Diseases</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <h4 class="alert-heading">No results found</h4>
+        <p>Sorry, we couldn't find any matches for "{{ query }}". Please try a different search term.</p>
+        <hr>
+        <p class="mb-0">Try searching for plant names, scientific names, or general categories like "vegetable" or "perennial".</p>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Browse Categories</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="{% url 'plant_list' %}" class="btn btn-outline-success btn-lg w-100 mb-3">Plants</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'seed_list' %}" class="btn btn-outline-success btn-lg w-100 mb-3">Seeds</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'pest_list' %}" class="btn btn-outline-success btn-lg w-100 mb-3">Pests</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{% url 'disease_list' %}" class="btn btn-outline-success btn-lg w-100 mb-3">Diseases</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

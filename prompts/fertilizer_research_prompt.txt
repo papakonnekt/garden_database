@@ -1,0 +1,75 @@
+FERTILIZER RESEARCH PROMPT
+
+Research the fertilizer "[[FERTILIZER_NAME]]" and generate comprehensive data in JSON format for a garden database. Include detailed information about the fertilizer itself, its composition, application methods, and suitable plants.
+
+OUTPUT FORMAT:
+Provide a single JSON array containing detailed fertilizer objects. The JSON should be properly formatted and ready for direct import into a database.
+
+[
+  {
+    "fertilizer_name": "String (required, the name of the fertilizer)",
+    "description": "String (detailed description of the fertilizer)",
+    "fertilizer_type": "String (e.g., 'Organic', 'Synthetic', 'Slow-release', 'Water-soluble')",
+    "npk_ratio": "String (e.g., '10-10-10', '5-10-5')",
+    "nitrogen_pct": Number (decimal, percentage of nitrogen),
+    "phosphorus_pct": Number (decimal, percentage of phosphorus),
+    "potassium_pct": Number (decimal, percentage of potassium),
+    "micronutrients": {
+      "iron_pct": Number (decimal),
+      "magnesium_pct": Number (decimal),
+      "calcium_pct": Number (decimal),
+      "sulfur_pct": Number (decimal),
+      "zinc_pct": Number (decimal),
+      "manganese_pct": Number (decimal),
+      "copper_pct": Number (decimal),
+      "boron_pct": Number (decimal),
+      "molybdenum_pct": Number (decimal)
+    },
+    "organic": Boolean (true if organic, false if synthetic),
+    "source_materials": ["String"] (array of materials used to make the fertilizer),
+    "application_method": "String (e.g., 'Broadcast', 'Side-dressing', 'Foliar spray')",
+    "application_rate": "String (recommended application rate)",
+    "application_frequency": "String (how often to apply)",
+    "suitable_plants": ["String"] (array of plant types this fertilizer is good for),
+    "best_season": "String (best season to apply)",
+    "ph_effect": "String (how it affects soil pH)",
+    "release_rate": "String (e.g., 'Slow', 'Medium', 'Fast')",
+    "environmental_impact": "String (description of environmental considerations)",
+    "storage_requirements": "String (how to store the fertilizer)",
+    "safety_precautions": "String (safety information)",
+    "manufacturer": "String (company that produces it)",
+    "price_range": "String (approximate cost range)",
+    "additional_notes": "String (any other relevant information)"
+  }
+]
+
+GUIDELINES:
+
+1. FERTILIZER DETAILS:
+   - Research [[FERTILIZER_NAME]] thoroughly and provide comprehensive information
+   - Include accurate NPK ratio and percentages of each nutrient
+   - If it's a specific brand, include manufacturer information
+   - If it's a generic type (like "fish emulsion"), focus on typical composition
+
+2. NUTRIENT CONTENT:
+   - Provide accurate percentages for primary nutrients (N-P-K)
+   - Include information about micronutrients when available
+   - For organic fertilizers, describe the source materials
+
+3. APPLICATION:
+   - Include detailed application methods and rates
+   - Specify which plants benefit most from this fertilizer
+   - Note any seasonal considerations for application
+
+4. PRACTICAL INFORMATION:
+   - Include storage requirements and shelf life
+   - Note any safety precautions or environmental concerns
+   - Provide information about cost and availability
+
+5. FORMATTING:
+   - Ensure all JSON is properly formatted with correct syntax
+   - Use decimal numbers for percentages (e.g., 5.0 not "5%")
+   - For unknown values, use null instead of empty strings
+   - Do not include any explanatory text outside the JSON array
+
+Your response should be a single, valid JSON array that can be directly imported into our garden database.

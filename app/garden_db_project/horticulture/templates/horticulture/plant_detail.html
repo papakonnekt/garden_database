@@ -1,0 +1,397 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}{{ plant.common_name }} - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ plant.common_name }}</h1>
+        <h4 class="text-muted">{{ plant.scientific_name }}</h4>
+        
+        <div class="mb-4">
+            <a href="{% url 'plant_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Plants
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if plant.image_url %}
+        <img src="{{ plant.image_url }}" class="img-fluid rounded" alt="{{ plant.common_name }}" style="max-height: 200px;">
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Description</h5>
+            </div>
+            <div class="card-body">
+                {% if plant.description %}
+                <p>{{ plant.description }}</p>
+                {% else %}
+                <p class="text-muted">No description available.</p>
+                {% endif %}
+                
+                {% if plant.common_names_list %}
+                <h6>Also known as:</h6>
+                <ul>
+                    {% for name in plant.common_names_list %}
+                    <li>{{ name }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Taxonomy</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width: 30%;">Scientific Name</th>
+                            <td>{{ plant.scientific_name }}</td>
+                        </tr>
+                        {% if plant.family %}
+                        <tr>
+                            <th scope="row">Family</th>
+                            <td>{{ plant.family }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.genus %}
+                        <tr>
+                            <th scope="row">Genus</th>
+                            <td>{{ plant.genus }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.species %}
+                        <tr>
+                            <th scope="row">Species</th>
+                            <td>{{ plant.species }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.subspecies_cultivar %}
+                        <tr>
+                            <th scope="row">Subspecies/Cultivar</th>
+                            <td>{{ plant.subspecies_cultivar }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Growth Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Lifecycle</th>
+                                    <td>
+                                        {% if plant.lifecycle_type == 'AN' %}Annual
+                                        {% elif plant.lifecycle_type == 'PE' %}Perennial
+                                        {% elif plant.lifecycle_type == 'BI' %}Biennial
+                                        {% else %}Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Growth Habit</th>
+                                    <td>
+                                        {% if plant.growth_habit == 'VI' %}Vine
+                                        {% elif plant.growth_habit == 'SH' %}Shrub
+                                        {% elif plant.growth_habit == 'TR' %}Tree
+                                        {% elif plant.growth_habit == 'GC' %}Groundcover
+                                        {% elif plant.growth_habit == 'HB' %}Herbaceous
+                                        {% elif plant.growth_habit == 'BU' %}Bulb
+                                        {% else %}Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if plant.avg_height_inches %}
+                                <tr>
+                                    <th scope="row">Average Height</th>
+                                    <td>{{ plant.avg_height_inches }} inches</td>
+                                </tr>
+                                {% endif %}
+                                {% if plant.avg_spread_inches %}
+                                <tr>
+                                    <th scope="row">Average Spread</th>
+                                    <td>{{ plant.avg_spread_inches }} inches</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                {% if plant.days_to_maturity_min or plant.days_to_maturity_max %}
+                                <tr>
+                                    <th scope="row">Days to Maturity</th>
+                                    <td>
+                                        {% if plant.days_to_maturity_min and plant.days_to_maturity_max %}
+                                            {{ plant.days_to_maturity_min }} - {{ plant.days_to_maturity_max }} days
+                                        {% elif plant.days_to_maturity_min %}
+                                            {{ plant.days_to_maturity_min }}+ days
+                                        {% elif plant.days_to_maturity_max %}
+                                            Up to {{ plant.days_to_maturity_max }} days
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if plant.germination_period_days_min or plant.germination_period_days_max %}
+                                <tr>
+                                    <th scope="row">Germination Period</th>
+                                    <td>
+                                        {% if plant.germination_period_days_min and plant.germination_period_days_max %}
+                                            {{ plant.germination_period_days_min }} - {{ plant.germination_period_days_max }} days
+                                        {% elif plant.germination_period_days_min %}
+                                            {{ plant.germination_period_days_min }}+ days
+                                        {% elif plant.germination_period_days_max %}
+                                            Up to {{ plant.germination_period_days_max }} days
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if plant.root_system_type %}
+                                <tr>
+                                    <th scope="row">Root System</th>
+                                    <td>{{ plant.root_system_type }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if plant.harvest_seasonality %}
+                                <tr>
+                                    <th scope="row">Harvest Season</th>
+                                    <td>{{ plant.harvest_seasonality }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                {% if plant.lifecycle_details %}
+                <h6>Lifecycle Details:</h6>
+                <p>{{ plant.lifecycle_details }}</p>
+                {% endif %}
+                
+                {% if plant.yield_estimates %}
+                <h6>Yield Estimates:</h6>
+                <p>{{ plant.yield_estimates }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if plant.companion_relationships_subject.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Companion Plants</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Good Companions:</h6>
+                        <ul class="list-group">
+                            {% for companion in plant.companion_relationships_subject.all %}
+                                {% if companion.interactions.filter.interaction_type == 'BEN' %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'plant_detail' companion.plant_object.id %}">{{ companion.plant_object.common_name }}</a>
+                                    <small class="text-success d-block">
+                                        {% for interaction in companion.interactions.all %}
+                                            {% if interaction.interaction_type == 'BEN' %}
+                                                {{ interaction.mechanism_description }}{% if not forloop.last %}, {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Bad Companions:</h6>
+                        <ul class="list-group">
+                            {% for companion in plant.companion_relationships_subject.all %}
+                                {% if companion.interactions.filter.interaction_type == 'DET' %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'plant_detail' companion.plant_object.id %}">{{ companion.plant_object.common_name }}</a>
+                                    <small class="text-danger d-block">
+                                        {% for interaction in companion.interactions.all %}
+                                            {% if interaction.interaction_type == 'DET' %}
+                                                {{ interaction.mechanism_description }}{% if not forloop.last %}, {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </small>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Growing Requirements</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Sunlight</th>
+                            <td>
+                                {% if plant.sunlight_requirements == 'FS' %}Full Sun
+                                {% elif plant.sunlight_requirements == 'PS' %}Partial Sun
+                                {% elif plant.sunlight_requirements == 'SH' %}Partial Shade
+                                {% elif plant.sunlight_requirements == 'FD' %}Full Shade
+                                {% else %}Not specified
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Moisture</th>
+                            <td>
+                                {% if plant.moisture_requirements == 'LO' %}Low
+                                {% elif plant.moisture_requirements == 'MO' %}Moderate
+                                {% elif plant.moisture_requirements == 'HI' %}High
+                                {% elif plant.moisture_requirements == 'BO' %}Boggy
+                                {% else %}Not specified
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if plant.soil_ph_min or plant.soil_ph_max %}
+                        <tr>
+                            <th scope="row">Soil pH</th>
+                            <td>
+                                {% if plant.soil_ph_min and plant.soil_ph_max %}
+                                    {{ plant.soil_ph_min }} - {{ plant.soil_ph_max }}
+                                {% elif plant.soil_ph_min %}
+                                    {{ plant.soil_ph_min }}+
+                                {% elif plant.soil_ph_max %}
+                                    Up to {{ plant.soil_ph_max }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.soil_preference %}
+                        <tr>
+                            <th scope="row">Soil Type</th>
+                            <td>{{ plant.soil_preference.name }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.temperature_tolerance_min_f or plant.temperature_tolerance_max_f %}
+                        <tr>
+                            <th scope="row">Temperature Tolerance</th>
+                            <td>
+                                {% if plant.temperature_tolerance_min_f %}Min: {{ plant.temperature_tolerance_min_f }}°F<br>{% endif %}
+                                {% if plant.temperature_tolerance_max_f %}Max: {{ plant.temperature_tolerance_max_f }}°F{% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if plant.suitable_region %}
+                        <tr>
+                            <th scope="row">Growing Zone</th>
+                            <td>{{ plant.suitable_region.zone_system }} - {{ plant.suitable_region.zone_identifier }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Nutrient Requirements</h5>
+            </div>
+            <div class="card-body">
+                {% if plant.npk_preference %}
+                <p><strong>NPK Preference:</strong> {{ plant.npk_preference }}</p>
+                {% endif %}
+                
+                {% if plant.micronutrient_needs_desc %}
+                <p><strong>Micronutrient Needs:</strong> {{ plant.micronutrient_needs_desc }}</p>
+                {% endif %}
+                
+                {% if plant.growth_stage_specific_npk %}
+                <h6>Stage-Specific Needs:</h6>
+                <ul class="list-group">
+                    {% for stage, needs in plant.growth_stage_specific_npk.items %}
+                    <li class="list-group-item">
+                        <strong>{{ stage|title }}:</strong> {{ needs }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if plant.pests.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Pests</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for pest in plant.pests.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'pest_detail' pest.id %}">{{ pest.common_name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if plant.diseases.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Diseases</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for disease in plant.diseases.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'disease_detail' disease.id %}">{{ disease.common_name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if plant.seeds.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Available Seeds</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for seed in plant.seeds.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'seed_detail' seed.id %}">{{ seed.seed_name }}</a>
+                        {% if seed.source_brand %}
+                        <small class="text-muted d-block">{{ seed.source_brand }}</small>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}API Documentation - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h1>API Documentation</h1>
+        <p class="lead">Garden Database provides comprehensive API access through both REST and GraphQL endpoints.</p>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Authentication</h2>
+            </div>
+            <div class="card-body">
+                <p>All API endpoints require authentication. We support token-based authentication.</p>
+                
+                <h5>Obtaining a Token</h5>
+                <p>To obtain an authentication token, send a POST request to:</p>
+                <pre class="bg-light p-3 rounded"><code>POST /api/v1/auth/token/
+{
+    "username": "your_username",
+    "password": "your_password"
+}</code></pre>
+                
+                <p>The response will contain your token:</p>
+                <pre class="bg-light p-3 rounded"><code>{
+    "token": "your_auth_token"
+}</code></pre>
+                
+                <h5>Using the Token</h5>
+                <p>Include the token in the Authorization header of all API requests:</p>
+                <pre class="bg-light p-3 rounded"><code>Authorization: Token your_auth_token</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">REST API</h2>
+            </div>
+            <div class="card-body">
+                <p>Our REST API follows standard REST conventions and provides endpoints for all database entities.</p>
+                
+                <h5>Base URL</h5>
+                <pre class="bg-light p-3 rounded"><code>/api/v1/</code></pre>
+                
+                <h5>Available Endpoints</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                            <th>Methods</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/api/v1/plants/</code></td>
+                            <td>Plant information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/seeds/</code></td>
+                            <td>Seed information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/pests/</code></td>
+                            <td>Pest information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/diseases/</code></td>
+                            <td>Disease information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/regions/</code></td>
+                            <td>Growing region information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/soil-profiles/</code></td>
+                            <td>Soil profile information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/fertilizers/</code></td>
+                            <td>Fertilizer information</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/companionships/</code></td>
+                            <td>Companion planting relationships</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/companion-interactions/</code></td>
+                            <td>Companion planting interaction types</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/plant-pests/</code></td>
+                            <td>Plant-pest relationships</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/plant-diseases/</code></td>
+                            <td>Plant-disease relationships</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/user-contributions/</code></td>
+                            <td>User contributions</td>
+                            <td>GET, POST, PUT, PATCH, DELETE</td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v1/bulk-import/</code></td>
+                            <td>Bulk data import</td>
+                            <td>POST</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h5>Example Request</h5>
+                <pre class="bg-light p-3 rounded"><code>GET /api/v1/plants/
+
+Response:
+{
+    "count": 100,
+    "next": "/api/v1/plants/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "common_name": "Tomato",
+            "scientific_name": "Solanum lycopersicum",
+            "description": "...",
+            ...
+        },
+        ...
+    ]
+}</code></pre>
+                
+                <h5>Filtering</h5>
+                <p>Most endpoints support filtering. For example:</p>
+                <pre class="bg-light p-3 rounded"><code>GET /api/v1/plants/?lifecycle_type=PE</code></pre>
+                
+                <h5>Pagination</h5>
+                <p>Results are paginated with 10 items per page by default. You can navigate using the <code>next</code> and <code>previous</code> links in the response, or specify a page:</p>
+                <pre class="bg-light p-3 rounded"><code>GET /api/v1/plants/?page=2</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">GraphQL API</h2>
+            </div>
+            <div class="card-body">
+                <p>Our GraphQL API allows for more flexible querying of the database.</p>
+                
+                <h5>Endpoint</h5>
+                <pre class="bg-light p-3 rounded"><code>/graphql</code></pre>
+                
+                <h5>Interactive GraphiQL Interface</h5>
+                <p>You can explore the GraphQL API using the interactive GraphiQL interface at <a href="/graphql">/graphql</a>.</p>
+                
+                <h5>Example Query</h5>
+                <pre class="bg-light p-3 rounded"><code>query {
+  allPlants {
+    edges {
+      node {
+        id
+        commonName
+        scientificName
+        description
+        lifecycle
+        growthHabit
+        seeds {
+          edges {
+            node {
+              seedName
+              germination
+            }
+          }
+        }
+        pests {
+          edges {
+            node {
+              commonName
+            }
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Bulk Import</h2>
+            </div>
+            <div class="card-body">
+                <p>For importing large datasets, we provide a bulk import endpoint:</p>
+                <pre class="bg-light p-3 rounded"><code>POST /api/v1/bulk-import/
+{
+    "entity_type": "plant",
+    "data": [
+        {
+            "common_name": "Tomato",
+            "scientific_name": "Solanum lycopersicum",
+            ...
+        },
+        ...
+    ]
+}</code></pre>
+                
+                <p>The response will include a task ID that you can use to check the import status:</p>
+                <pre class="bg-light p-3 rounded"><code>{
+    "message": "Bulk import of 10 plant records started.",
+    "task_id": "12345-abcde-67890",
+    "status": "processing"
+}</code></pre>
+                
+                <p>Check the status of the import task:</p>
+                <pre class="bg-light p-3 rounded"><code>GET /api/v1/tasks/12345-abcde-67890/</code></pre>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Rate Limits</h2>
+            </div>
+            <div class="card-body">
+                <p>API requests are subject to rate limiting:</p>
+                <ul>
+                    <li>Anonymous users: 10 requests per minute</li>
+                    <li>Authenticated users: 60 requests per minute</li>
+                    <li>Premium users: 1000 requests per minute</li>
+                </ul>
+                <p>Rate limit information is included in the response headers:</p>
+                <pre class="bg-light p-3 rounded"><code>X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1619123456</code></pre>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Support</h2>
+            </div>
+            <div class="card-body">
+                <p>If you have questions or need assistance with the API, please contact our support team at <a href="mailto:api-support@gardendatabase.com">api-support@gardendatabase.com</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

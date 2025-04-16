@@ -1,0 +1,250 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}{{ pest.common_name }} - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ pest.common_name }}</h1>
+        {% if pest.scientific_name %}
+        <h4 class="text-muted">{{ pest.scientific_name }}</h4>
+        {% endif %}
+        
+        <div class="mb-4">
+            <a href="{% url 'pest_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Pests
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if pest.image_url %}
+        <img src="{{ pest.image_url }}" class="img-fluid rounded" alt="{{ pest.common_name }}" style="max-height: 200px;">
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Description</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.description %}
+                <p>{{ pest.description }}</p>
+                {% else %}
+                <p class="text-muted">No description available.</p>
+                {% endif %}
+                
+                {% if pest.common_names_list %}
+                <h6>Also known as:</h6>
+                <ul>
+                    {% for name in pest.common_names_list %}
+                    <li>{{ name }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Identification</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Category</th>
+                                    <td>
+                                        {% if pest.category == 'INS' %}Insect
+                                        {% elif pest.category == 'MAM' %}Mammal
+                                        {% elif pest.category == 'MOL' %}Mollusk
+                                        {% elif pest.category == 'OTH' %}Other
+                                        {% else %}Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if pest.size_mm %}
+                                <tr>
+                                    <th scope="row">Size</th>
+                                    <td>{{ pest.size_mm }} mm</td>
+                                </tr>
+                                {% endif %}
+                                {% if pest.color %}
+                                <tr>
+                                    <th scope="row">Color</th>
+                                    <td>{{ pest.color }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if pest.lifecycle_stage %}
+                                <tr>
+                                    <th scope="row">Damaging Stage</th>
+                                    <td>{{ pest.lifecycle_stage }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if pest.identification_tips %}
+                        <h6>Identification Tips:</h6>
+                        <p>{{ pest.identification_tips }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Damage & Symptoms</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.symptoms %}
+                <p>{{ pest.symptoms }}</p>
+                {% else %}
+                <p class="text-muted">No symptom information available.</p>
+                {% endif %}
+                
+                {% if pest.damage_type %}
+                <h6>Type of Damage:</h6>
+                <p>{{ pest.damage_type }}</p>
+                {% endif %}
+                
+                {% if pest.severity_level %}
+                <h6>Severity Level:</h6>
+                <p>
+                    {% if pest.severity_level == 'LOW' %}Low - Minor damage, plants typically recover
+                    {% elif pest.severity_level == 'MED' %}Medium - Moderate damage, may affect yield
+                    {% elif pest.severity_level == 'HIG' %}High - Severe damage, can kill plants
+                    {% else %}{{ pest.severity_level }}
+                    {% endif %}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Management & Control</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.control_methods %}
+                <h6>Control Methods:</h6>
+                <p>{{ pest.control_methods }}</p>
+                {% endif %}
+                
+                {% if pest.prevention_methods %}
+                <h6>Prevention:</h6>
+                <p>{{ pest.prevention_methods }}</p>
+                {% endif %}
+                
+                {% if pest.organic_control_options %}
+                <h6>Organic Control Options:</h6>
+                <p>{{ pest.organic_control_options }}</p>
+                {% endif %}
+                
+                {% if pest.chemical_control_options %}
+                <h6>Chemical Control Options:</h6>
+                <p>{{ pest.chemical_control_options }}</p>
+                {% endif %}
+                
+                {% if pest.natural_predators %}
+                <h6>Natural Predators:</h6>
+                <p>{{ pest.natural_predators }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Affected Plants</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.plants.all %}
+                <ul class="list-group">
+                    {% for plant in pest.plants.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'plant_detail' plant.id %}">{{ plant.common_name }}</a>
+                        <small class="text-muted d-block">{{ plant.scientific_name }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No affected plants listed.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Seasonal Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.active_seasons %}
+                <h6>Active Seasons:</h6>
+                <ul class="list-group">
+                    {% if 'spring' in pest.active_seasons %}
+                    <li class="list-group-item">Spring</li>
+                    {% endif %}
+                    {% if 'summer' in pest.active_seasons %}
+                    <li class="list-group-item">Summer</li>
+                    {% endif %}
+                    {% if 'fall' in pest.active_seasons %}
+                    <li class="list-group-item">Fall</li>
+                    {% endif %}
+                    {% if 'winter' in pest.active_seasons %}
+                    <li class="list-group-item">Winter</li>
+                    {% endif %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No seasonal information available.</p>
+                {% endif %}
+                
+                {% if pest.peak_activity_time %}
+                <h6 class="mt-3">Peak Activity:</h6>
+                <p>{{ pest.peak_activity_time }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Geographic Distribution</h5>
+            </div>
+            <div class="card-body">
+                {% if pest.geographic_distribution %}
+                <p>{{ pest.geographic_distribution }}</p>
+                {% else %}
+                <p class="text-muted">No distribution information available.</p>
+                {% endif %}
+                
+                {% if pest.habitat_preference %}
+                <h6>Preferred Habitat:</h6>
+                <p>{{ pest.habitat_preference }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Additional Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created:</strong> {{ pest.created_at|date:"F j, Y" }}</p>
+                <p><strong>Last Updated:</strong> {{ pest.updated_at|date:"F j, Y" }}</p>
+                
+                {% if pest.additional_notes %}
+                <h6>Notes:</h6>
+                <p>{{ pest.additional_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

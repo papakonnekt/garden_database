@@ -1,0 +1,126 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}Garden Database - Home{% endblock %}
+
+{% block content %}
+<div class="jumbotron p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Welcome to the Garden Database</h1>
+        <p class="col-md-8 fs-4">A comprehensive database of plants, seeds, pests, diseases, and companion planting information for gardeners and plant enthusiasts.</p>
+        <a href="{% url 'plant_list' %}" class="btn btn-primary btn-lg">Browse Plants</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Plants</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for plant in recent_plants %}
+                    <li class="list-group-item">
+                        <a href="{% url 'plant_detail' plant.id %}">{{ plant.common_name }}</a>
+                        <small class="text-muted d-block">{{ plant.scientific_name }}</small>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No plants available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'plant_list' %}" class="btn btn-sm btn-outline-primary">View All Plants</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Seeds</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for seed in recent_seeds %}
+                    <li class="list-group-item">
+                        <a href="{% url 'seed_detail' seed.id %}">{{ seed.seed_name }}</a>
+                        {% if seed.plant %}
+                        <small class="text-muted d-block">{{ seed.plant.common_name }}</small>
+                        {% endif %}
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No seeds available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'seed_list' %}" class="btn btn-sm btn-outline-primary">View All Seeds</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Companion Planting</h5>
+            </div>
+            <div class="card-body">
+                <p>Discover which plants grow well together and which ones should be kept apart.</p>
+                <p>Our companion planting database provides information on beneficial and detrimental plant relationships to help you plan your garden layout effectively.</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'companion_list' %}" class="btn btn-sm btn-outline-primary">Explore Companion Planting</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Garden Pests</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for pest in common_pests %}
+                    <li class="list-group-item">
+                        <a href="{% url 'pest_detail' pest.id %}">{{ pest.common_name }}</a>
+                        <small class="text-muted d-block">{{ pest.scientific_name }}</small>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No pests available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'pest_list' %}" class="btn btn-sm btn-outline-primary">View All Pests</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Plant Diseases</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for disease in common_diseases %}
+                    <li class="list-group-item">
+                        <a href="{% url 'disease_detail' disease.id %}">{{ disease.common_name }}</a>
+                        <small class="text-muted d-block">{{ disease.scientific_name }}</small>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No diseases available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'disease_list' %}" class="btn btn-sm btn-outline-primary">View All Diseases</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

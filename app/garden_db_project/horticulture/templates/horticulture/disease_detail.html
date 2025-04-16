@@ -1,0 +1,273 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}{{ disease.common_name }} - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ disease.common_name }}</h1>
+        {% if disease.scientific_name %}
+        <h4 class="text-muted">{{ disease.scientific_name }}</h4>
+        {% endif %}
+        
+        <div class="mb-4">
+            <a href="{% url 'disease_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to Diseases
+            </a>
+        </div>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if disease.image_url %}
+        <img src="{{ disease.image_url }}" class="img-fluid rounded" alt="{{ disease.common_name }}" style="max-height: 200px;">
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Description</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.description %}
+                <p>{{ disease.description }}</p>
+                {% else %}
+                <p class="text-muted">No description available.</p>
+                {% endif %}
+                
+                {% if disease.common_names_list %}
+                <h6>Also known as:</h6>
+                <ul>
+                    {% for name in disease.common_names_list %}
+                    <li>{{ name }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Cause & Classification</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Category</th>
+                                    <td>
+                                        {% if disease.category == 'FUN' %}Fungal
+                                        {% elif disease.category == 'BAC' %}Bacterial
+                                        {% elif disease.category == 'VIR' %}Viral
+                                        {% elif disease.category == 'NEM' %}Nematode
+                                        {% elif disease.category == 'OTH' %}Other
+                                        {% else %}Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if disease.cause %}
+                                <tr>
+                                    <th scope="row">Causal Agent</th>
+                                    <td>{{ disease.cause }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if disease.taxonomy %}
+                                <tr>
+                                    <th scope="row">Taxonomy</th>
+                                    <td>{{ disease.taxonomy }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        {% if disease.cause_details %}
+                        <h6>Details:</h6>
+                        <p>{{ disease.cause_details }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Symptoms & Diagnosis</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.symptoms %}
+                <p>{{ disease.symptoms }}</p>
+                {% else %}
+                <p class="text-muted">No symptom information available.</p>
+                {% endif %}
+                
+                {% if disease.diagnostic_methods %}
+                <h6>Diagnostic Methods:</h6>
+                <p>{{ disease.diagnostic_methods }}</p>
+                {% endif %}
+                
+                {% if disease.severity_level %}
+                <h6>Severity Level:</h6>
+                <p>
+                    {% if disease.severity_level == 'LOW' %}Low - Minor damage, plants typically recover
+                    {% elif disease.severity_level == 'MED' %}Medium - Moderate damage, may affect yield
+                    {% elif disease.severity_level == 'HIG' %}High - Severe damage, can kill plants
+                    {% else %}{{ disease.severity_level }}
+                    {% endif %}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Disease Cycle</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.disease_cycle %}
+                <p>{{ disease.disease_cycle }}</p>
+                {% else %}
+                <p class="text-muted">No disease cycle information available.</p>
+                {% endif %}
+                
+                {% if disease.transmission_methods %}
+                <h6>Transmission Methods:</h6>
+                <p>{{ disease.transmission_methods }}</p>
+                {% endif %}
+                
+                {% if disease.survival_conditions %}
+                <h6>Survival Conditions:</h6>
+                <p>{{ disease.survival_conditions }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Management & Control</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.control_methods %}
+                <h6>Control Methods:</h6>
+                <p>{{ disease.control_methods }}</p>
+                {% endif %}
+                
+                {% if disease.prevention_methods %}
+                <h6>Prevention:</h6>
+                <p>{{ disease.prevention_methods }}</p>
+                {% endif %}
+                
+                {% if disease.organic_control_options %}
+                <h6>Organic Control Options:</h6>
+                <p>{{ disease.organic_control_options }}</p>
+                {% endif %}
+                
+                {% if disease.chemical_control_options %}
+                <h6>Chemical Control Options:</h6>
+                <p>{{ disease.chemical_control_options }}</p>
+                {% endif %}
+                
+                {% if disease.resistant_varieties %}
+                <h6>Resistant Varieties:</h6>
+                <p>{{ disease.resistant_varieties }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Affected Plants</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.plants.all %}
+                <ul class="list-group">
+                    {% for plant in disease.plants.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'plant_detail' plant.id %}">{{ plant.common_name }}</a>
+                        <small class="text-muted d-block">{{ plant.scientific_name }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No affected plants listed.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Environmental Conditions</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.favorable_conditions %}
+                <h6>Favorable Conditions:</h6>
+                <p>{{ disease.favorable_conditions }}</p>
+                {% else %}
+                <p class="text-muted">No environmental information available.</p>
+                {% endif %}
+                
+                {% if disease.temperature_range %}
+                <h6>Temperature Range:</h6>
+                <p>{{ disease.temperature_range }}</p>
+                {% endif %}
+                
+                {% if disease.humidity_preference %}
+                <h6>Humidity Preference:</h6>
+                <p>{{ disease.humidity_preference }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Geographic Distribution</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.geographic_distribution %}
+                <p>{{ disease.geographic_distribution }}</p>
+                {% else %}
+                <p class="text-muted">No distribution information available.</p>
+                {% endif %}
+                
+                {% if disease.first_reported %}
+                <h6>First Reported:</h6>
+                <p>{{ disease.first_reported }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Economic Impact</h5>
+            </div>
+            <div class="card-body">
+                {% if disease.economic_impact %}
+                <p>{{ disease.economic_impact }}</p>
+                {% else %}
+                <p class="text-muted">No economic impact information available.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Additional Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created:</strong> {{ disease.created_at|date:"F j, Y" }}</p>
+                <p><strong>Last Updated:</strong> {{ disease.updated_at|date:"F j, Y" }}</p>
+                
+                {% if disease.additional_notes %}
+                <h6>Notes:</h6>
+                <p>{{ disease.additional_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

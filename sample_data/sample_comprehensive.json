@@ -1,0 +1,87 @@
+{
+  "plants": [
+    {
+      "common_name": "Corn",
+      "scientific_name": "Zea mays",
+      "description": "Tall annual grass with elongated stems, large narrow leaves, and edible seeds (kernels) that develop on a cob.",
+      "family": "Poaceae",
+      "genus": "Zea",
+      "species": "mays",
+      "lifecycle_type": "AN",
+      "growth_habit": "HB",
+      "avg_height_inches": 96,
+      "avg_spread_inches": 24,
+      "days_to_maturity_min": 60,
+      "days_to_maturity_max": 100,
+      "sunlight_requirements": "FS",
+      "moisture_requirements": "MO",
+      "soil_ph_min": 5.8,
+      "soil_ph_max": 7.0,
+      "npk_preference": "10-5-10"
+    },
+    {
+      "common_name": "Bean",
+      "scientific_name": "Phaseolus vulgaris",
+      "description": "Annual legume with climbing or bush growth habit that produces edible pods and seeds.",
+      "family": "Fabaceae",
+      "lifecycle_type": "AN",
+      "growth_habit": "VI"
+    },
+    {
+      "common_name": "Squash",
+      "scientific_name": "Cucurbita pepo",
+      "description": "Annual vine with large leaves and edible fruits.",
+      "family": "Cucurbitaceae",
+      "lifecycle_type": "AN",
+      "growth_habit": "VI"
+    }
+  ],
+  "companion_relationships": [
+    {
+      "plant_subject": "Zea mays",
+      "plant_object": "Phaseolus vulgaris",
+      "interactions": [
+        {
+          "interaction_type": "BEN",
+          "mechanism_description": "Beans fix nitrogen in the soil, which benefits corn, a heavy nitrogen feeder. Corn provides structural support for climbing bean varieties."
+        }
+      ],
+      "notes": "Part of the traditional 'Three Sisters' companion planting method used by Native Americans."
+    },
+    {
+      "plant_subject": "Zea mays",
+      "plant_object": "Cucurbita pepo",
+      "interactions": [
+        {
+          "interaction_type": "BEN",
+          "mechanism_description": "Squash provides ground cover that suppresses weeds and retains soil moisture for corn. The prickly stems and leaves also deter pests."
+        }
+      ],
+      "notes": "Another component of the 'Three Sisters' planting method. Squash is typically planted around the perimeter of the corn and bean planting."
+    }
+  ],
+  "pests": [
+    {
+      "common_name": "European Corn Borer",
+      "scientific_name": "Ostrinia nubilalis",
+      "description": "Cream-colored caterpillar with a brown head that tunnels into corn stalks and ears.",
+      "category": "INS",
+      "symptoms": "Broken tassels, holes in stalks with sawdust-like frass, stunted growth, reduced yield.",
+      "damage_type": "Boring, tunneling",
+      "severity_level": "HIG",
+      "control_methods": "Crop rotation, early planting, destruction of crop residue, biological controls, insecticides.",
+      "affected_plants": ["Zea mays"]
+    },
+    {
+      "common_name": "Corn Earworm",
+      "scientific_name": "Helicoverpa zea",
+      "description": "Caterpillar that varies in color from green to brown with light stripes along the sides.",
+      "category": "INS",
+      "symptoms": "Damage to corn ears, especially at the tip, with visible frass and feeding damage.",
+      "damage_type": "Chewing",
+      "severity_level": "MED",
+      "control_methods": "Bt sprays, mineral oil application to silk, beneficial insects, resistant varieties.",
+      "affected_plants": ["Zea mays"]
+    }
+  ]
+}

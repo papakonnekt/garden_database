@@ -1,0 +1,78 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}About - Garden Database{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">About Garden Database</h1>
+            </div>
+            <div class="card-body">
+                <h2>Our Mission</h2>
+                <p class="lead">
+                    Garden Database is a comprehensive resource for gardeners, botanists, and plant enthusiasts, providing detailed information about plants, seeds, pests, diseases, and companion planting.
+                </p>
+                
+                <h2>Features</h2>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Plant Database</h5>
+                                <p class="card-text">Detailed information on thousands of plants, including growth requirements, lifecycle data, and morphological traits.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Seed Catalog</h5>
+                                <p class="card-text">Comprehensive seed information including germination rates, planting instructions, and storage recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Pest & Disease Information</h5>
+                                <p class="card-text">Identification and management strategies for common garden pests and plant diseases.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Companion Planting Guide</h5>
+                                <p class="card-text">Learn which plants grow well together and which combinations to avoid for optimal garden health.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>Data Sources</h2>
+                <p>
+                    Our database combines information from botanical research, agricultural extension services, and experienced gardeners. We strive to provide accurate, up-to-date information to help you succeed in your gardening endeavors.
+                </p>
+                
+                <h2>API Access</h2>
+                <p>
+                    Garden Database offers comprehensive API access for developers who want to integrate our data into their applications. We provide both REST API and GraphQL endpoints.
+                </p>
+                <p>
+                    <a href="{% url 'api_docs' %}" class="btn btn-primary">View API Documentation</a>
+                </p>
+                
+                <h2>Contributing</h2>
+                <p>
+                    We welcome contributions from the gardening community. If you have information to add or corrections to suggest, please use our contribution form or contact us directly.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
