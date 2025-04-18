@@ -151,6 +151,51 @@ Response:
                 <pre class="bg-light p-3 rounded"><code>GET /api/v1/plants/?page=2</code></pre>
             </div>
         </div>
+                <h5>Plant Compatibility Endpoint</h5>
+                <p>Retrieves comprehensive compatibility data for a specific plant, including pH range and companion plant details.</p>
+                
+                <h6>Endpoint</h6>
+                <pre class="bg-light p-3 rounded"><code>GET /api/horticulture/plants/{plant_id}/compatibility/</code></pre>
+                
+                <h6>URL Parameters</h6>
+                <ul>
+                    <li><code>{plant_id}</code>: The unique identifier of the plant.</li>
+                </ul>
+                
+                <h6>Description</h6>
+                <p>This endpoint provides detailed information about a plant's compatibility factors, such as its preferred pH range and interactions with other plants (companionship).</p>
+                
+                <h6>Example Response</h6>
+                <pre class="bg-light p-3 rounded"><code>{
+    "plant_id": 1,
+    "common_name": "Tomato",
+    "scientific_name": "Solanum lycopersicum",
+    "ph_minimum": 6.0,
+    "ph_maximum": 6.8,
+    "companions": [
+        {
+            "companion_plant_id": 5,
+            "companion_common_name": "Basil",
+            "interaction_type": "Beneficial",
+            "notes": "Basil repels tomato hornworms and whiteflies."
+        },
+        {
+            "companion_plant_id": 12,
+            "companion_common_name": "Carrot",
+            "interaction_type": "Beneficial",
+            "notes": "Carrots help loosen the soil."
+        }
+    ],
+    "antagonists": [
+        {
+            "antagonist_plant_id": 20,
+            "antagonist_common_name": "Fennel",
+            "interaction_type": "Antagonistic",
+            "notes": "Fennel inhibits tomato growth."
+        }
+    ]
+}</code></pre>
+
         
         <div class="card mb-4">
             <div class="card-header">

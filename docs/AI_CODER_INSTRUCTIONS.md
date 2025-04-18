@@ -93,6 +93,55 @@ The base URL for the API is: `http://localhost:8000/api/v1/`
 | `/regions/{id}/` | Retrieve, update or delete a region | GET, PUT, PATCH, DELETE |
 | `/soil-profiles/` | List or create soil profiles | GET, POST |
 | `/soil-profiles/{id}/` | Retrieve, update or delete a soil profile | GET, PUT, PATCH, DELETE |
+| `/horticulture/plants/{plant_id}/compatibility/` | Retrieve compatibility details for a plant | GET |
+
+
+#### Plant Compatibility Endpoint (`/horticulture/plants/{plant_id}/compatibility/`)
+
+Retrieves comprehensive compatibility data for a specific plant identified by `{plant_id}`. This includes the plant's own pH range and details about its companion plants (beneficial, detrimental, neutral).
+
+**Method:** `GET`
+
+**URL Parameters:**
+*   `{plant_id}` (uuid): The unique identifier of the plant for which to retrieve compatibility data.
+
+**Example Response:**
+
+```json
+{
+  "plant_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "common_name": "Tomato",
+  "scientific_name": "Solanum lycopersicum",
+  "soil_ph_min": "6.0",
+  "soil_ph_max": "6.8",
+  "compatible_companions": [
+    {
+      "plant_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+      "common_name": "Basil",
+      "scientific_name": "Ocimum basilicum",
+      "interaction_type": "BEN",
+      "mechanism_description": "Repels tomato hornworms and whiteflies."
+    },
+    {
+      "plant_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+      "common_name": "Carrot",
+      "scientific_name": "Daucus carota",
+      "interaction_type": "BEN",
+      "mechanism_description": "Loosens soil."
+    }
+  ],
+  "incompatible_companions": [
+    {
+      "plant_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+      "common_name": "Fennel",
+      "scientific_name": "Foeniculum vulgare",
+      "interaction_type": "DET",
+      "mechanism_description": "Inhibits tomato growth."
+    }
+  ],
+  "neutral_companions": []
+}
+```
 
 ### Filtering and Searching
 
