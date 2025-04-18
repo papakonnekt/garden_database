@@ -13,3 +13,5 @@ django-crispy-forms==2.0
 crispy-bootstrap5==0.7
 drf-yasg==1.21.7
 django-debug-toolbar==4.2.0
+celery
+redis

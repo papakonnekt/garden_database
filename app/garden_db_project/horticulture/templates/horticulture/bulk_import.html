@@ -24,7 +24,7 @@
                         <label for="entity_type" class="form-label">Entity Type</label>
                         <select class="form-select" id="entity_type" name="entity_type" required>
                             <option value="" selected disabled>Select entity type</option>
-                            <option value="comprehensive">Comprehensive (Plants, Companions & Pests)</option>
+                            <option value="comprehensive">Comprehensive (Plants, Companions, Pests & Diseases)</option>
                             <option value="plant">Plants</option>
                             <option value="seed">Seeds</option>
                             <option value="pest">Pests</option>
@@ -151,10 +151,41 @@
       "category": "INS",
       "symptoms": "Broken tassels, holes in stalks with sawdust-like frass.",
       "affected_plants": ["Zea mays"]
+    },
+    {
+      "common_name": "Tomato Hornworm",
+      "scientific_name": "Manduca quinquemaculata",
+      "description": "Large green caterpillar with white diagonal stripes and a horn-like projection.",
+      "category": "INS",
+      "symptoms": "Defoliation, damage to fruit, black droppings.",
+      "affected_plants": ["Solanum lycopersicum", "Solanum lycopersicum 'Beefsteak'"]
+    }
+  ],
+  "diseases": [
+    {
+      "common_name": "Corn Smut",
+      "scientific_name": "Ustilago maydis",
+      "description": "Fungal disease that causes galls on corn plants.",
+      "category": "FUN",
+      "cause": "Ustilago maydis fungus",
+      "symptoms": "Silver-gray galls on ears, tassels, and leaves that eventually turn black.",
+      "affected_plants": ["Zea mays"]
+    },
+    {
+      "common_name": "Early Blight",
+      "scientific_name": "Alternaria solani",
+      "description": "Fungal disease that affects tomatoes, potatoes, and other nightshade plants.",
+      "category": "FUN",
+      "cause": "Alternaria solani fungus",
+      "symptoms": "Dark spots with concentric rings on lower leaves first, then spreading upward.",
+      "treatment_methods": ["Remove infected leaves", "Apply fungicide"],
+      "prevention_methods": ["Crop rotation", "Proper spacing", "Mulching"],
+      "affected_plants": ["Solanum lycopersicum", "Solanum lycopersicum 'Beefsteak'"]
     }
   ]
 }</code></pre>
-                                <p class="mt-2"><small class="text-muted">This format allows you to import plants, companion relationships, and pests all at once. It's ideal for adding complete information about a plant and its ecosystem.</small></p>
+                                <p class="mt-2"><small class="text-muted">This format allows you to import plants, companion relationships, pests, and diseases all at once. It's ideal for adding complete information about a plant and its ecosystem.</small></p>
+                                <p><small class="text-info">Important: For pests and diseases, make sure to include the 'affected_plants' field with an array of plant scientific names to properly link them.</small></p>
                             </div>
                         </div>
                     </div>

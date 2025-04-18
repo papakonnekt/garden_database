@@ -1,0 +1,20 @@
+Generate a comprehensive dataset of common plant diseases affecting agricultural and horticultural species. For each disease, provide the following information in a structured JSON format:
+- Common Name: (string) The commonly used name for the disease.
+- Scientific Name (Pathogen): (string) The scientific name of the causal agent (fungus, bacterium, virus, etc.).
+- Pathogen Type: (string) Classification of the pathogen (e.g., fungal, bacterial, viral, oomycete, phytoplasma).
+- Affected Host Plants: (string array) List of primary plant species susceptible to the disease.
+- Symptoms: (object) Detailed description of symptoms observed on different plant parts:
+    - Leaves: (string) e.g., spots, blights, wilting, yellowing, mosaic patterns, pustules.
+    - Stems: (string) e.g., cankers, lesions, dieback, galls.
+    - Roots: (string) e.g., rot, lesions, galls, stunting.
+    - Fruits: (string) e.g., spots, rots, blemishes, deformation.
+    - Flowers: (string) e.g., blights, spots, deformation.
+- Disease Cycle/Epidemiology: (string) Description of how the pathogen survives, spreads, and infects host plants, including relevant life stages.
+- Conditions Favoring Disease Development: (string) Environmental factors that promote disease occurrence and severity (e.g., specific temperature ranges, high humidity, rainfall patterns, soil moisture).
+- Geographic Distribution: (string) Regions or climates where the disease is prevalent.
+- Transmission Methods: (string array) How the pathogen spreads (e.g., wind, water splash, insects, contaminated tools, infected seeds/transplants).
+- Management Strategies: (object)
+    - Cultural Practices: (string array) Methods like sanitation, crop rotation, proper spacing, water management, improving air circulation.
+    - Resistant Varieties: (string array) Mention if resistant cultivars are available.
+    - Biological Controls: (string array) Use of beneficial microorganisms or agents to suppress the pathogen, with specific examples if known.
+    - Chemical Treatments: (string array) Specific types of fungicides, bactericides, etc., effective against the pathogen, including active ingredients and application timing notes (use as part of an integrated strategy).

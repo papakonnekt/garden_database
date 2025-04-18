@@ -1,0 +1,15 @@
+Generate a comprehensive dataset of common agricultural and horticultural pests. For each pest, provide the following information in a structured JSON format:
+- Common Name(s): (string array) List of common names used for the pest.
+- Scientific Name: (string) The scientific binomial name.
+- Pest Type: (string) Categorization (e.g., insect, mite, nematode, rodent, fungus, bacteria, virus).
+- Detailed Description: (string) Physical description, including variations across life stages (egg, larva/nymph, pupa, adult).
+- Primary Host Plants: (string array) List of plants most commonly affected.
+- Symptoms of Infestation/Damage: (string) Detailed description of the signs and damage caused to host plants (e.g., leaf discoloration, holes, wilting, galls, root damage).
+- Life Cycle: (string) Description of the pest's life cycle stages and duration.
+- Geographic Distribution: (string) Regions or climates where the pest is commonly found.
+- Effective Monitoring Techniques: (string) Methods for detecting the pest's presence (e.g., visual inspection, sticky traps, pheromone traps).
+- Integrated Pest Management (IPM) Strategies: (object)
+    - Cultural Controls: (string array) Farming/gardening practices that reduce pest issues (e.g., crop rotation, sanitation, resistant varieties).
+    - Biological Controls: (string array) Use of natural enemies (predators, parasitoids, pathogens) with specific examples.
+    - Physical/Mechanical Controls: (string array) Direct methods to remove or block pests (e.g., handpicking, barriers, traps, tillage).
+    - Chemical Controls: (string array) Specific types of pesticides (insecticides, miticides, fungicides, etc.) effective against the pest, including active ingredients and usage notes (use only when necessary as part of IPM).

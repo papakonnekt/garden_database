@@ -1,0 +1,18 @@
+Generate a detailed dataset for a wide variety of plant seeds, covering vegetables, fruits, herbs, and flowers. For each specific plant seed type, provide the following information in a structured JSON format:
+- Common Plant Name: (string) The common name of the plant the seed belongs to.
+- Scientific Name: (string) The scientific binomial name of the plant.
+- Variety Name: (string, optional) Specific cultivar or variety name, if applicable.
+- Seed Description: (string) Physical characteristics (size, shape, color, texture).
+- Optimal Germination Temperature Range: (string) The ideal soil temperature range for germination (specify units, e.g., °C/°F).
+- Germination Time: (string) Typical number of days required for seeds to sprout under optimal conditions.
+- Soil Temperature Requirement for Sowing: (string) Minimum or optimal soil temperature needed before sowing outdoors (specify units, e.g., °C/°F).
+- Sowing Depth: (string) Recommended depth to plant the seed (e.g., 1/4 inch, 6mm).
+- Spacing Requirements: (object)
+    - Plant Spacing: (string) Recommended distance between individual plants.
+    - Row Spacing: (string) Recommended distance between rows.
+- Light Requirements for Germination: (string) Specify if light is required, beneficial, or inhibitory for germination (e.g., "Requires light", "Requires darkness", "Light aids germination").
+- Seed Viability Duration: (string) Estimated number of years the seed typically remains viable under proper storage conditions.
+- Pre-treatment Needs: (object)
+    - Stratification: (string) Describe any required cold, moist stratification period (duration, temperature). Use "None" if not needed.
+    - Scarification: (string) Describe any required seed coat abrasion or weakening method (e.g., nicking, soaking in hot water). Use "None" if not needed.
+- Days to Maturity: (string) Typical number of days from sowing/transplanting to harvest or first flowering.

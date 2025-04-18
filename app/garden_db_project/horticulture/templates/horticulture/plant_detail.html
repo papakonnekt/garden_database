@@ -192,52 +192,80 @@
             </div>
         </div>
         
-        {% if plant.companion_relationships_subject.all %}
+        {% if companionships %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Companion Plants</h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Good Companions:</h6>
-                        <ul class="list-group">
-                            {% for companion in plant.companion_relationships_subject.all %}
-                                {% if companion.interactions.filter.interaction_type == 'BEN' %}
-                                <li class="list-group-item">
-                                    <a href="{% url 'plant_detail' companion.plant_object.id %}">{{ companion.plant_object.common_name }}</a>
-                                    <small class="text-success d-block">
-                                        {% for interaction in companion.interactions.all %}
+                <ul class="list-group">
+                    {% for comp in companionships %}
+                        {% if comp.plant_subject == plant %}
+                            {% with other_plant=comp.plant_object %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a href="{% url 'plant_detail' other_plant.id %}">{{ other_plant.common_name }}</a>
+                                        {% if comp.notes %}
+                                        <small class="d-block text-muted">{{ comp.notes }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% for interaction in comp.interactions.all %}
                                             {% if interaction.interaction_type == 'BEN' %}
-                                                {{ interaction.mechanism_description }}{% if not forloop.last %}, {% endif %}
+                                                <span class="badge bg-success">Helps</span>
+                                            {% elif interaction.interaction_type == 'DET' %}
+                                                <span class="badge bg-danger">Harms</span>
+                                            {% elif interaction.interaction_type == 'NEU' %}
+                                                <span class="badge bg-secondary">Neutral</span>
                                             {% endif %}
-                                        {% endfor %}
-                                    </small>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Bad Companions:</h6>
-                        <ul class="list-group">
-                            {% for companion in plant.companion_relationships_subject.all %}
-                                {% if companion.interactions.filter.interaction_type == 'DET' %}
-                                <li class="list-group-item">
-                                    <a href="{% url 'plant_detail' companion.plant_object.id %}">{{ companion.plant_object.common_name }}</a>
-                                    <small class="text-danger d-block">
-                                        {% for interaction in companion.interactions.all %}
-                                            {% if interaction.interaction_type == 'DET' %}
-                                                {{ interaction.mechanism_description }}{% if not forloop.last %}, {% endif %}
+                                            {% if interaction.mechanism_description %}
+                                                <small class="text-muted ms-1">({{ interaction.mechanism_description }})</small>
                                             {% endif %}
+                                        {% empty %}
+                                            <span class="badge bg-light text-dark">No interaction details</span>
                                         {% endfor %}
-                                    </small>
+                                    </div>
                                 </li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
+                            {% endwith %}
+                        {% else %}
+                            {% with other_plant=comp.plant_subject %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a href="{% url 'plant_detail' other_plant.id %}">{{ other_plant.common_name }}</a>
+                                        {% if comp.notes %}
+                                        <small class="d-block text-muted">{{ comp.notes }}</small>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% for interaction in comp.interactions.all %}
+                                            {% if interaction.interaction_type == 'BEN' %}
+                                                <span class="badge bg-success">Helps</span>
+                                            {% elif interaction.interaction_type == 'DET' %}
+                                                <span class="badge bg-danger">Harms</span>
+                                            {% elif interaction.interaction_type == 'NEU' %}
+                                                <span class="badge bg-secondary">Neutral</span>
+                                            {% endif %}
+                                            {% if interaction.mechanism_description %}
+                                                <small class="text-muted ms-1">({{ interaction.mechanism_description }})</small>
+                                            {% endif %}
+                                        {% empty %}
+                                            <span class="badge bg-light text-dark">No interaction details</span>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Companion Plants</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No companion planting information available for this plant.</p>
             </div>
         </div>
         {% endif %}
@@ -339,36 +367,61 @@
             </div>
         </div>
         
-        {% if plant.pests.all %}
+        {% if plant_pests %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Common Pests</h5>
             </div>
             <div class="card-body">
                 <ul class="list-group">
-                    {% for pest in plant.pests.all %}
+                    {% for plant_pest in plant_pests %}
                     <li class="list-group-item">
-                        <a href="{% url 'pest_detail' pest.id %}">{{ pest.common_name }}</a>
+                        <a href="{% url 'pest_detail' plant_pest.pest.id %}">{{ plant_pest.pest.common_name }}</a>
+                        {% if plant_pest.notes %}
+                        <small class="d-block text-muted">{{ plant_pest.notes }}</small>
+                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
+        {% else %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Pests</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No specific pest associations found for this plant.</p>
+            </div>
+        </div>
         {% endif %}
         
-        {% if plant.diseases.all %}
+        {% if plant_diseases %} {# Check the context variable passed from the view #}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Common Diseases</h5>
             </div>
             <div class="card-body">
                 <ul class="list-group">
-                    {% for disease in plant.diseases.all %}
+                    {% for plant_disease in plant_diseases %} {# Iterate over PlantDisease objects #}
                     <li class="list-group-item">
-                        <a href="{% url 'disease_detail' disease.id %}">{{ disease.common_name }}</a>
+                        {# Access the actual Disease object via the relationship #}
+                        <a href="{% url 'disease_detail' plant_disease.disease.id %}">{{ plant_disease.disease.common_name }}</a>
+                        {% if plant_disease.notes %}
+                        <small class="d-block text-muted">{{ plant_disease.notes }}</small>
+                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
+            </div>
+        </div>
+        {% else %} {# Add an else block for consistency #}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Common Diseases</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No specific disease associations found for this plant.</p>
             </div>
         </div>
         {% endif %}

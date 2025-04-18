@@ -1,7 +1,9 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+# Remove direct import of User, use settings.AUTH_USER_MODEL instead
+# from django.contrib.auth.models import User
 
 # Use Django's built-in User model and create a profile model
 # class UserProfile(models.Model):
@@ -173,6 +175,9 @@ class Disease(models.Model):
     symptoms = models.TextField(blank=True, null=True, help_text="Symptoms caused by the disease") # Added help_text
     treatment_strategies = models.JSONField(default=list, blank=True, help_text="Array of treatment strategies (organic and conventional)") # Replaces control fields
     prevention_strategies = models.JSONField(default=list, blank=True, help_text="Array of prevention strategies") # Added
+    conditions_favoring = models.TextField(blank=True, null=True, help_text="Conditions favoring disease development")
+    geographic_distribution = models.TextField(blank=True, null=True, help_text="Geographic distribution of the disease")
+    transmission_methods = models.JSONField(default=list, blank=True, help_text="Array of transmission methods")
     image_url = models.URLField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -409,7 +414,7 @@ class UserContribution(models.Model):
         ('rejected', 'Rejected'),
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='contributions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='contributions')
     entity_type = models.CharField(max_length=50, null=False, blank=False, default="plant", help_text="Type of entity being contributed (e.g., 'plant', 'seed', 'tip')")
     entity_id = models.CharField(max_length=50, null=True, blank=True) # ID of existing entity if modifying
     proposed_data = models.JSONField(null=False, default=dict, help_text="JSON data containing the proposed changes or additions")
@@ -417,7 +422,7 @@ class UserContribution(models.Model):
     admin_notes = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(default=timezone.now) # Use default=timezone.now for submission time
     reviewed_at = models.DateTimeField(null=True, blank=True)
-    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_contributions')
+    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_contributions')
 
     def __str__(self):
         return f"Contribution {self.id} by {self.user.username} ({self.status})"

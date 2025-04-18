@@ -1,127 +1,59 @@
-# Garden Database
+# Garden Database & Horticulture Management
 
-A comprehensive database system for gardeners and plant enthusiasts. This application provides a structured way to store, manage, and retrieve information about plants, companion planting relationships, pests, diseases, fertilizers, and more.
+A Django-based web application designed for managing comprehensive horticultural data. It allows users to store, retrieve, and manage information about plants, seeds, companion planting interactions, pests, diseases, fertilizers, soil profiles, and growing regions. The application features a web interface, REST/GraphQL APIs, and integrates with AI tools via prompts for efficient data generation. The goal is to provide a robust tool for gardeners, researchers, and enthusiasts.
 
-## Features
+## Technology Stack
 
-### Data Management
-- **Comprehensive Plant Data**: Store detailed information about plants including growth requirements, lifecycle, physical characteristics, and more
-- **Companion Planting**: Track which plants grow well together and which should be kept apart
-- **Pest & Disease Information**: Document common garden pests and diseases, their symptoms, and control methods
-- **Fertilizer Database**: Store information about different fertilizers, their composition, and application methods
-- **Seed Catalog**: Track seed varieties, germination rates, and planting instructions
+*   Python
+*   Django (including Django REST Framework, Graphene-Django)
+*   PostgreSQL
+*   Docker / Docker Compose
+*   Bootstrap
 
-### User Interface
-- **Web-based Interface**: Browse and search the database through a user-friendly web UI
-- **Responsive Design**: Works on desktop and mobile devices
-- **Detailed Views**: Comprehensive information pages for each entity type
-- **Search Functionality**: Find plants, seeds, pests, and more with powerful search capabilities
-- **Filtering Options**: Filter lists by various criteria (plant type, lifecycle, etc.)
-
-### API Access
-- **REST API**: Programmatic access to all database entities
-- **GraphQL Endpoint**: Flexible querying capabilities
-- **Authentication**: Secure token-based authentication for API access
-
-### Import/Export
-- **Bulk Import**: Upload JSON files to add multiple records at once
-- **AI-Ready Prompts**: Use provided prompts with AI tools to generate properly formatted data
-- **Automatic Relationship Handling**: When importing data about one plant, related entities (companions, pests) are automatically created or updated
-
-## Architecture
-
-The Garden Database is built using:
-- **Django**: Web framework for the backend
-- **PostgreSQL**: Relational database for data storage
-- **Django REST Framework**: For the REST API
-- **Graphene-Django**: For the GraphQL API
-- **Bootstrap**: For the responsive frontend
-- **Docker**: For containerization and easy deployment
-
-## Getting Started
+## Setup and Installation
 
 ### Prerequisites
-- Docker and Docker Compose
-- Git
 
-### Installation
+*   Docker and Docker Compose
+*   Git
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/papakonnekt/garden-database.git
-   cd garden-database
-   ```
+### Using Docker (Recommended)
 
-2. Run the setup script:
-   ```bash
-   ./scripts/setup.sh
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/papakonnekt/garden-database.git
+    cd garden-database
+    ```
+2.  **Configure Environment:**
+    *   Run `setup.bat` (Windows) or `setup.sh` (Linux/Mac). These scripts help create the necessary `.env` file.
+    *   Alternatively, create the `.env` file manually. Refer to `docs/SETUP.md` for detailed instructions on required environment variables.
+3.  **Start the application:**
+    ```bash
+    docker-compose up -d
+    ```
+4.  **Access the application:**
+    *   Open your web browser to `http://localhost:8000`.
+    *   On the first run, you might be prompted to create an administrator account.
 
-3. Access the application:
-   - Web UI: http://localhost:8000
-   - On first run, you'll be prompted to create an admin account
-   - After setup, you can access the API at http://localhost:8000/api/v1/
-   - GraphQL is available at http://localhost:8000/graphql
+### Setup Scripts
 
-For detailed setup instructions, see [SETUP.md](docs/SETUP.md).
+The `setup.bat` (for Windows) and `setup.sh` (for Linux/Mac) scripts are provided to help automate the initial environment configuration, primarily focusing on creating the `.env` file with necessary settings like database credentials and Django secret key.
 
-## Using the Database
+## Folder Overview
 
-### Web Interface
+*   [**`/app`**](./app/README.md): Contains the core Django application code.
+*   [**`/docs`**](./docs/README.md): Project documentation.
+*   [**`/prompts`**](./prompts/README.md): AI prompts for research/generation.
+*   [**`/scripts`**](./scripts/README.md): Utility scripts for the project.
 
-The web interface provides access to all database features:
+## Known Issues
 
-1. **Browse Plants**: View detailed information about plants, their growing requirements, and relationships
-2. **Search**: Use the search bar to find specific plants, seeds, pests, or diseases
-3. **Companion Planting**: Explore which plants grow well together and which should be kept apart
-4. **Bulk Import**: Upload JSON files to add multiple records at once
+*   **Seeds Tab:** The 'Seeds' tab functionality is currently under development and may not work as expected.
 
-### Generating Data with AI
+## Author
 
-The `prompts` directory contains templates for generating properly formatted data using AI tools:
-
-1. **Plant Research**: Use `plant_research_prompt.txt` to generate comprehensive data about a plant, its companions, and pests
-2. **Fertilizer Research**: Use `fertilizer_research_prompt.txt` to generate data about fertilizers
-
-To use these prompts:
-1. Copy the content of the prompt file
-2. Replace the placeholder (e.g., `[[PLANT_NAME]]`) with the specific item you want to research
-3. Submit to an AI tool (like ChatGPT or Claude)
-4. Take the JSON output and upload it using the Bulk Import feature
-
-### API Access
-
-The database provides both REST and GraphQL APIs for programmatic access:
-
-- **REST API**: Access endpoints at `/api/v1/`
-- **GraphQL**: Access the GraphQL interface at `/graphql`
-
-For detailed API documentation, see the API Docs page in the web interface.
-
-## Data Model
-
-The database includes the following main entities:
-
-- **Plant**: Detailed information about plants
-- **Seed**: Information about specific seed varieties
-- **Pest**: Garden pests and their control methods
-- **Disease**: Plant diseases and their management
-- **Fertilizer**: Fertilizer types, composition, and application
-- **Region**: Growing regions and zones
-- **SoilProfile**: Soil types and characteristics
-- **Companionship**: Relationships between plants
-
-For a complete data model, see [DATA_MODEL.md](docs/DATA_MODEL.md).
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Created by papakonnekt
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors who have helped build this database
-- Special thanks to the open-source community for the tools that made this possible
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

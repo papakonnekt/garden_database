@@ -1,0 +1,16 @@
+Generate a dataset describing common soil types relevant to agriculture and horticulture. For each distinct soil type (e.g., sandy, clay, loam, silt, peat, chalky), provide the following information in a structured JSON format:
+- Soil Type Name: (string) The common name of the soil type.
+- Typical Composition: (object) Approximate percentages:
+    - Sand (%): (number)
+    - Silt (%): (number)
+    - Clay (%): (number)
+    - Organic Matter (%): (number)
+- Texture Description: (string) How the soil feels (e.g., "Gritty", "Sticky when wet, hard when dry", "Smooth and crumbly").
+- Structure: (string) Description of how soil particles aggregate (e.g., "Granular", "Blocky", "Platy", "Single-grained", "Massive").
+- Drainage Characteristics: (string) How well water passes through (e.g., "Excellent/Rapid", "Good/Well-drained", "Moderate", "Poor/Slow", "Very Poor/Waterlogged").
+- Water Holding Capacity: (string) Ability to retain moisture (e.g., "Low", "Medium", "High").
+- Aeration Level: (string) Amount of air space within the soil (e.g., "Good", "Moderate", "Poor").
+- Typical pH Range: (string) The usual acidity or alkalinity range (e.g., "5.5 - 6.5", "7.0 - 8.0").
+- Nutrient Content/Fertility Level: (string) General assessment of natural fertility (e.g., "Low", "Medium", "High", "Variable").
+- Common Amendments: (string array) Substances typically added to improve the soil's properties (e.g., "Compost", "Aged manure", "Lime", "Gypsum", "Peat moss", "Sand", "Clay").
+- Suitability: (string) General suitability for specific types of plants or crops (e.g., "Good for root vegetables and drought-tolerant plants", "Suitable for most vegetables and flowers with amendment", "Requires significant improvement for most crops").

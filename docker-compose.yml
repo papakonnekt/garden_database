@@ -1,4 +1,4 @@
-version: '3.8'
+# Docker Compose configuration for Garden Database
 
 services:
   db:
@@ -18,16 +18,48 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    restart: always
+    # No ports exposed by default, add if needed for external debugging
+    # ports:
+    #   - "6379:6379"
+
+  celery:
+    build: ./app
+    restart: always
+    working_dir: /app/garden_db_project
+    command: celery -A garden_db_project.celery worker --loglevel=info
+    volumes:
+      - ./app:/app
+    env_file:
+      - .env
+    environment:
+      # Inherit necessary env vars from .env via env_file
+      # Explicitly define Celery broker URL and DB URL
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Include other necessary env vars if worker needs them (like SECRET_KEY)
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+    depends_on:
+      redis:
+        condition: service_started # Assuming redis starts quickly enough
+      db:
+        condition: service_healthy
+
   web:
     build: ./app
     restart: always
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started # Add dependency for web service
     volumes:
       - ./app:/app
       - static_volume:/app/garden_db_project/static
       - media_volume:/app/garden_db_project/media
+      - ./jsons:/jsons
     env_file:
       - .env
     environment:

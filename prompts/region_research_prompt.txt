@@ -1,0 +1,13 @@
+Generate a dataset characterizing major global agricultural/horticultural regions or specific climate zones (e.g., USDA Plant Hardiness Zones, Köppen climate classifications, or equivalent local systems). For each region/zone, provide the following information in a structured JSON format:
+- Region/Zone Name/Identifier: (string) The name or code identifying the region or zone (e.g., "USDA Zone 7b", "Mediterranean Climate Csa").
+- Defining Geographic Location(s): (string) Description of the geographical area covered by this region/zone (e.g., "Southeastern United States", "Coastal California", "Southern France").
+- Typical Climate Description: (object)
+    - Temperature Ranges: (string) Seasonal average highs and lows, record extremes if relevant (specify units °C/°F).
+    - Precipitation Patterns: (string) Average annual rainfall/snowfall, seasonal distribution (e.g., "Wet winters, dry summers").
+    - Humidity Levels: (string) General description of typical humidity (e.g., "High humidity year-round", "Low humidity").
+- Average First Frost Date: (string) Typical date of the first autumn frost (e.g., "October 15-30").
+- Average Last Frost Date: (string) Typical date of the last spring frost (e.g., "April 1-15").
+- Growing Season Length: (string) Approximate number of frost-free days.
+- Predominant Soil Types: (string array) Common soil types found in the region (e.g., "Clay loam", "Sandy soils").
+- Native or Commonly Grown Plants/Crops: (string array) List examples of plants well-suited to or typically cultivated in the region.
+- Significant Environmental Challenges: (string array) Common issues faced by growers in the region (e.g., "Drought susceptibility", "High pest pressure (specify common pests)", "Late spring frosts", "Poor soil drainage").

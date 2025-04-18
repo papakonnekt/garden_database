@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders", # Added CORS headers for frontend
     # Local apps
     "horticulture.apps.HorticultureConfig",
+    "registration", # Added for first admin registration
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "registration.middleware.FirstAdminMiddleware", # Added for first admin setup
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -85,9 +87,9 @@ WSGI_APPLICATION = "garden_db_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "gardendb",
-        "USER": "garden_user",
-        "PASSWORD": "password", # Use environment variables in production!
+        "NAME": os.environ.get('POSTGRES_DB'),
+        "USER": os.environ.get('POSTGRES_USER'),
+        "PASSWORD": os.environ.get('POSTGRES_PASSWORD'),
         "HOST": "db",  # Changed from localhost to match docker-compose service name
         "PORT": "5432",
     }
@@ -162,8 +164,8 @@ REST_FRAMEWORK = {
 }
 
 # Celery Configuration
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # Points to the 'redis' service in docker-compose
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0' # Points to the 'redis' service in docker-compose
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -177,3 +179,38 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Using Django's built-in User model
+
+# Redirect after login
+LOGIN_REDIRECT_URL = '/'
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname}:{name}:{message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO', # Show INFO level messages and above
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        '': { # Root logger - affects all loggers unless overridden
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': { # Keep Django's default level (usually WARNING)
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False, # Don't propagate Django logs to root
+        },
+    },
+}
+

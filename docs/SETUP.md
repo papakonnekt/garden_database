@@ -23,7 +23,18 @@ cd garden-database
 
 The setup script will guide you through the installation process:
 
+**On Windows:**
+```
+Right-click on scripts\setup.ps1 and select "Run with PowerShell"
+```
+Or use the batch file:
+```
+scripts\run_setup.bat
+```
+
+**On Linux/Mac:**
 ```bash
+chmod +x ./scripts/setup.sh  # Make the script executable
 ./scripts/setup.sh
 ```
 
@@ -37,18 +48,18 @@ This script will:
 
 The first run may take several minutes as it builds the images and sets up the database.
 
-### 3. Configure Environment Variables (Optional)
+### 3. Environment Configuration
 
-The setup script creates a default `.env` file with the following variables:
+The setup script automatically creates a `.env` file with secure default values:
 
 ```
 # Database Configuration
 POSTGRES_DB=garden_db
 POSTGRES_USER=garden_db_user
-POSTGRES_PASSWORD=change_this_password
+POSTGRES_PASSWORD=garden_db_password
 
 # Django Configuration
-DJANGO_SECRET_KEY=change_this_to_a_secure_random_string
+DJANGO_SECRET_KEY=<randomly generated secure key>
 DJANGO_DEBUG=True
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
 
@@ -56,9 +67,10 @@ DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
 FIRST_RUN=true
 ```
 
-You can edit these values if needed. For production, you should:
-- Change the database password
-- Generate a secure Django secret key
+**No manual configuration is needed** for local development. The script generates a secure random key and sets up working default values.
+
+For production deployment, you may want to edit these values:
+- Change the database password to something more secure
 - Set `DJANGO_DEBUG=False`
 - Add your domain to `DJANGO_ALLOWED_HOSTS`
 

@@ -1,0 +1,11 @@
+Generate a comprehensive dataset of companion planting relationships, focusing on common vegetables, fruits, and herbs as primary plants. For each specified primary plant, provide the following information in a structured JSON format:
+- Primary Plant Common Name: (string) The common name of the main plant.
+- Primary Plant Scientific Name: (string) The scientific binomial name of the main plant.
+- Beneficial Companions: (array of objects) List of plants that benefit the primary plant. Each object should contain:
+    - Companion Common Name: (string) Common name of the beneficial plant.
+    - Companion Scientific Name: (string) Scientific name of the beneficial plant.
+    - Benefit Description: (string) Specific benefit(s) provided (e.g., "Deters aphids", "Attracts predatory wasps", "Improves soil nitrogen", "Provides ground cover", "Offers structural support", "Acts as trap crop for flea beetles").
+- Detrimental Companions (Antagonists): (array of objects) List of plants that negatively impact the primary plant. Each object should contain:
+    - Antagonist Common Name: (string) Common name of the detrimental plant.
+    - Antagonist Scientific Name: (string) Scientific name of the detrimental plant.
+    - Negative Interaction: (string) Description of the negative effect (e.g., "Competes heavily for nutrients", "Exhibits allelopathy (inhibits growth)", "Attracts shared pests like spider mites", "Increases susceptibility to shared diseases like blight").

@@ -1,0 +1,115 @@
+{% extends 'horticulture/base.html' %}
+
+{% block title %}Fix Relationships - Garden Database{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">Fix Plant Relationships</h2>
+                </div>
+                <div class="card-body">
+                    <p class="lead">This tool will fix relationships between plants, pests, and diseases.</p>
+
+                    {% if result %}
+                    <div class="alert {% if result.success %}alert-success{% else %}alert-danger{% endif %} mb-4">
+                        <h4 class="alert-heading">{{ result.message }}</h4>
+                        {% if result.details %}
+                        <hr>
+                        <p>{{ result.details }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'fix_relationships' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Choose an option:</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="file_option" id="option_all" value="all" checked>
+                                <label class="form-check-label" for="option_all">
+                                    Fix all relationships in the database
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="file_option" id="option_server" value="server">
+                                <label class="form-check-label" for="option_server">
+                                    Use a file from the server
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="file_option" id="option_upload" value="upload">
+                                <label class="form-check-label" for="option_upload">
+                                    Upload a file from my computer
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="server_file_section" style="display: none;">
+                            <label for="server_file" class="form-label">Select a file from the server:</label>
+                            <select class="form-select" id="server_file" name="server_file">
+                                {% for file in json_files %}
+                                <option value="{{ file }}">{{ file }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="upload_file_section" style="display: none;">
+                            <label for="upload_file" class="form-label">Upload a JSON file:</label>
+                            <input type="file" class="form-control" id="upload_file" name="upload_file" accept=".json">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Fix Relationships</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">What This Tool Does</h3>
+                </div>
+                <div class="card-body">
+                    <p>This tool helps fix issues with plant-pest and plant-disease relationships in the database. It can:</p>
+                    <ul>
+                        <li>Fix missing relationships between plants and pests</li>
+                        <li>Fix missing relationships between plants and diseases</li>
+                        <li>Use a JSON file to establish correct relationships</li>
+                    </ul>
+                    <p>Use this tool if you notice that pests or diseases are not showing up on plant detail pages.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the radio buttons and sections
+        const optionAll = document.getElementById('option_all');
+        const optionServer = document.getElementById('option_server');
+        const optionUpload = document.getElementById('option_upload');
+        const serverFileSection = document.getElementById('server_file_section');
+        const uploadFileSection = document.getElementById('upload_file_section');
+
+        // Function to update visibility
+        function updateVisibility() {
+            serverFileSection.style.display = optionServer.checked ? 'block' : 'none';
+            uploadFileSection.style.display = optionUpload.checked ? 'block' : 'none';
+        }
+
+        // Add event listeners
+        optionAll.addEventListener('change', updateVisibility);
+        optionServer.addEventListener('change', updateVisibility);
+        optionUpload.addEventListener('change', updateVisibility);
+
+        // Initial update
+        updateVisibility();
+    });
+</script>
+{% endblock %}

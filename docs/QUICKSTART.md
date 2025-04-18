@@ -18,7 +18,18 @@ This guide will help you get up and running with the Garden Database quickly.
 
 2. **Run the setup script**
 
+   **On Windows:**
+   ```
+   Right-click on scripts\setup.ps1 and select "Run with PowerShell"
+   ```
+   Or use the batch file:
+   ```
+   scripts\run_setup.bat
+   ```
+
+   **On Linux/Mac:**
    ```bash
+   chmod +x ./scripts/setup.sh  # Make the script executable
    ./scripts/setup.sh
    ```
 
@@ -34,7 +45,7 @@ This guide will help you get up and running with the Garden Database quickly.
 
 4. **After creating your admin account**
 
-   Edit the `.env` file and set `FIRST_RUN=false` to disable the setup page on future runs.
+   The setup page will only appear on the first run. After you create your admin account, it won't appear again.
 
 ## Using the Bulk Import Feature
 

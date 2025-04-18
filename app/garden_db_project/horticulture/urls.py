@@ -3,6 +3,8 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from .views import BulkImportView
 from .task_views import TaskStatusView
+from .new_bulk_import_view import NewBulkImportView
+from .web_views import FixRelationshipsView
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
@@ -22,7 +24,8 @@ router.register(r'companion-interactions', views.CompanionPlantingInteractionVie
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path('bulk-import/', BulkImportView.as_view(), name='bulk-import'),
+    path('bulk-import/', NewBulkImportView.as_view(), name='bulk-import'),
+    path('fix-relationships/', FixRelationshipsView.as_view(), name='fix_relationships'),
     path('tasks/<str:task_id>/', TaskStatusView.as_view(), name='task-status'),
     path('', include(router.urls)), # Keep router include last
 ]

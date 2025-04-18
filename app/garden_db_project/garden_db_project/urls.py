@@ -30,6 +30,8 @@ from horticulture.web_views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('accounts/', include('registration.urls')), # Added for first admin registration and potentially other auth
+    path('accounts/', include('django.contrib.auth.urls')), # Standard Django auth (login, logout, password reset, etc.)
 
     # API endpoints
     path('api/v1/', include('horticulture.urls')),

@@ -1,41 +1,72 @@
+# app/garden_db_project/registration/views.py
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.conf import settings
+from django.urls import reverse, reverse_lazy, NoReverseMatch
+from django.contrib.auth import get_user_model
 from django.contrib import messages
-import os
-from .forms import FirstTimeSetupForm
+from django.views import View
+from .forms import FirstAdminRegistrationForm
+import logging
 
-def first_time_setup(request):
-    # Check if we should show the first-time setup page
-    first_run = os.environ.get('FIRST_RUN', 'false').lower() == 'true'
-    
-    # If it's not the first run or there are already users, redirect to home
-    if not first_run or User.objects.exists():
-        return redirect('home')
-    
-    if request.method == 'POST':
-        form = FirstTimeSetupForm(request.POST)
+logger = logging.getLogger(__name__)
+User = get_user_model()
+
+# Define the login URL name - adjust if your login URL has a different name
+# Common defaults include 'login', 'account_login' (django-allauth), etc.
+LOGIN_URL_NAME = 'login'
+
+class FirstAdminRegisterView(View):
+    template_name = 'registration/first_admin_register.html'
+    form_class = FirstAdminRegistrationForm
+    success_url = None # Will be set dynamically
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            # Use reverse_lazy for class attributes or resolve dynamically
+            self.success_url = reverse_lazy(LOGIN_URL_NAME)
+        except NoReverseMatch:
+            logger.error(f"Could not reverse the login URL named '{LOGIN_URL_NAME}'. "
+                         f"Ensure it's defined in your URLconf. Falling back to '/'.")
+            self.success_url = reverse_lazy('/') # Fallback URL
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if a superuser already exists before processing the view
+        if User.objects.filter(is_superuser=True).exists():
+            messages.warning(request, "An admin account already exists. Please log in.")
+            # Redirect to login or dashboard if admin exists
+            try:
+                # Resolve the URL here for immediate redirection
+                login_url = reverse(LOGIN_URL_NAME)
+                return redirect(login_url)
+            except NoReverseMatch:
+                 logger.error(f"Could not reverse login URL ('{LOGIN_URL_NAME}') during dispatch. Redirecting to root.")
+                 # Fallback redirect to home page or admin index
+                 return redirect('/')
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
         if form.is_valid():
-            # Create the superuser
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
-            user.is_staff = True
-            user.is_superuser = True
-            user.save()
-            
-            # Log the user in
-            login(request, user)
-            
-            # Show a success message
-            messages.success(request, 'Your admin account has been created successfully! You are now logged in.')
-            
-            # Redirect to the home page
-            return redirect('home')
-    else:
-        form = FirstTimeSetupForm()
-    
-    return render(request, 'registration/first_time_setup.html', {'form': form})
+            try:
+                user = form.save()
+                logger.info(f"First admin user '{user.username}' created successfully.")
+                messages.success(request, f"Admin account '{user.username}' created successfully. Please log in.")
+                # Resolve the success_url before redirecting
+                redirect_url = self.success_url.format() # Resolve the lazy object
+                return redirect(redirect_url)
+            except Exception as e:
+                 # Catch potential errors during user creation/saving
+                 logger.error(f"Error creating first admin user: {e}", exc_info=True)
+                 messages.error(request, "An unexpected error occurred while creating the admin account. Please check the logs and try again.")
+                 # Re-render the form, keeping entered data but showing an error
+                 return render(request, self.template_name, {'form': form})
+        else:
+            # Form is invalid, re-render with errors
+            logger.warning("First admin registration form validation failed.")
+            messages.warning(request, "Please correct the errors below.") # Use warning for validation errors
+            return render(request, self.template_name, {'form': form})

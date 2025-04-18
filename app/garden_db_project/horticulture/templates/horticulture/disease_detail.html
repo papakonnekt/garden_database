@@ -58,15 +58,7 @@
                             <tbody>
                                 <tr>
                                     <th scope="row">Category</th>
-                                    <td>
-                                        {% if disease.category == 'FUN' %}Fungal
-                                        {% elif disease.category == 'BAC' %}Bacterial
-                                        {% elif disease.category == 'VIR' %}Viral
-                                        {% elif disease.category == 'NEM' %}Nematode
-                                        {% elif disease.category == 'OTH' %}Other
-                                        {% else %}Not specified
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ disease.get_category_display|default:"Not specified" }}</td>
                                 </tr>
                                 {% if disease.cause %}
                                 <tr>
@@ -135,7 +127,16 @@
                 
                 {% if disease.transmission_methods %}
                 <h6>Transmission Methods:</h6>
-                <p>{{ disease.transmission_methods }}</p>
+                    {# Assuming disease.transmission_methods is passed as a list/iterable from the view #}
+                    <ul>
+                        {% for method in disease.transmission_methods %}
+                        <li>{{ method }}</li>
+                        {% empty %}
+                        {# This part is handled by the outer 'else' block already #}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                <p class="text-muted">No transmission information available.</p>
                 {% endif %}
                 
                 {% if disease.survival_conditions %}
@@ -150,27 +151,34 @@
                 <h5 class="card-title mb-0">Management & Control</h5>
             </div>
             <div class="card-body">
-                {% if disease.control_methods %}
-                <h6>Control Methods:</h6>
-                <p>{{ disease.control_methods }}</p>
+                {% if disease.treatment_strategies %}
+                    <h6>Treatment Strategies:</h6>
+                    {% if disease.treatment_strategies.items %}
+                        {% for strategy, details in disease.treatment_strategies.items %}
+                            <div class="mb-2">
+                                <strong>{{ strategy|title }}:</strong>
+                                {% if details is string %}
+                                    <p>{{ details }}</p>
+                                {% elif details is iterable %}
+                                    <ul>
+                                        {% for item in details %}
+                                        <li>{{ item }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>{{ details }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {# Handle case where treatment_strategies might be a simple string #}
+                        <p>{{ disease.treatment_strategies }}</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">No treatment strategies available.</p>
                 {% endif %}
-                
-                {% if disease.prevention_methods %}
-                <h6>Prevention:</h6>
-                <p>{{ disease.prevention_methods }}</p>
-                {% endif %}
-                
-                {% if disease.organic_control_options %}
-                <h6>Organic Control Options:</h6>
-                <p>{{ disease.organic_control_options }}</p>
-                {% endif %}
-                
-                {% if disease.chemical_control_options %}
-                <h6>Chemical Control Options:</h6>
-                <p>{{ disease.chemical_control_options }}</p>
-                {% endif %}
-                
-                {% if disease.resistant_varieties %}
+
+                {% if disease.resistant_varieties %} {# Keep resistant varieties if it exists separately #}
                 <h6>Resistant Varieties:</h6>
                 <p>{{ disease.resistant_varieties }}</p>
                 {% endif %}
@@ -204,9 +212,9 @@
                 <h5 class="card-title mb-0">Environmental Conditions</h5>
             </div>
             <div class="card-body">
-                {% if disease.favorable_conditions %}
-                <h6>Favorable Conditions:</h6>
-                <p>{{ disease.favorable_conditions }}</p>
+                {% if disease.conditions_favoring %}
+                <h6>Conditions Favoring Disease:</h6>
+                <p>{{ disease.conditions_favoring }}</p>
                 {% else %}
                 <p class="text-muted">No environmental information available.</p>
                 {% endif %}

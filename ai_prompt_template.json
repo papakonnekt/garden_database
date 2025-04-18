@@ -1,0 +1,96 @@
+{
+  "plants": [
+    {
+      "common_name": "Beefsteak Tomato",
+      "scientific_name": "Solanum lycopersicum 'Beefsteak'",
+      "description": "A large, meaty tomato variety with a classic tomato flavor. Fruits can weigh up to 2 pounds.",
+      "family": "Solanaceae",
+      "lifecycle_type": "AN",
+      "growth_habit": "VN",
+      "days_to_maturity_min": 85,
+      "days_to_maturity_max": 95,
+      "sun_requirements": "FS",
+      "water_requirements": "MD",
+      "planting_depth_inches": 0.25,
+      "spacing_inches": 24,
+      "height_inches_min": 48,
+      "height_inches_max": 96,
+      "hardiness_zones": "3-11",
+      "harvest_notes": "Harvest when fruits are fully red but still firm. Twist gently or cut from the vine.",
+      "storage_notes": "Store at room temperature for best flavor. Refrigeration dulls flavor but extends shelf life.",
+      "culinary_uses": ["Fresh eating", "Sandwiches", "Salads", "Sauces", "Canning"],
+      "medicinal_uses": ["Rich in lycopene", "Antioxidant properties"],
+      "additional_notes": "Indeterminate variety that will continue to produce until frost. Requires staking or caging for support."
+    }
+  ],
+  "pests": [
+    {
+      "common_name": "Tomato Hornworm",
+      "scientific_name": "Manduca quinquemaculata",
+      "description": "Large green caterpillar with white diagonal stripes and a horn-like projection on its rear.",
+      "category": "INS",
+      "symptoms": "Defoliation of upper leaves, damage to fruit, black droppings on leaves.",
+      "treatment_methods": ["Handpicking", "Bacillus thuringiensis (Bt) spray", "Encourage parasitic wasps"],
+      "prevention_methods": ["Crop rotation", "Tilling soil in fall", "Companion planting with dill or basil"],
+      "affected_plants": ["Solanum lycopersicum 'Beefsteak'", "Solanum lycopersicum"]
+    },
+    {
+      "common_name": "Aphid",
+      "scientific_name": "Aphidoidea",
+      "description": "Small soft-bodied insects that cluster on new growth and undersides of leaves.",
+      "category": "INS",
+      "symptoms": "Curled leaves, sticky honeydew residue, stunted growth, sooty mold.",
+      "treatment_methods": ["Insecticidal soap", "Neem oil", "Strong water spray"],
+      "prevention_methods": ["Encourage beneficial insects", "Reflective mulch", "Companion planting with nasturtiums"],
+      "affected_plants": ["Solanum lycopersicum 'Beefsteak'", "Solanum lycopersicum"]
+    }
+  ],
+  "diseases": [
+    {
+      "common_name": "Early Blight",
+      "scientific_name": "Alternaria solani",
+      "description": "Fungal disease that affects tomatoes, potatoes, and other nightshade plants.",
+      "category": "FUN",
+      "cause": "Alternaria solani fungus",
+      "symptoms": "Dark brown spots with concentric rings (target-like appearance) on lower leaves first, then spreading upward. Leaves may yellow and drop.",
+      "treatment_methods": ["Remove and destroy infected plant parts", "Apply copper-based fungicides", "Ensure proper plant spacing for air circulation"],
+      "prevention_methods": ["Crop rotation", "Mulching", "Avoiding overhead watering", "Resistant varieties"],
+      "affected_plants": ["Solanum lycopersicum 'Beefsteak'", "Solanum lycopersicum"]
+    },
+    {
+      "common_name": "Late Blight",
+      "scientific_name": "Phytophthora infestans",
+      "description": "Highly destructive fungal-like disease that caused the Irish Potato Famine. Can destroy entire crops in favorable conditions.",
+      "category": "FUN",
+      "cause": "Phytophthora infestans oomycete",
+      "symptoms": "Water-soaked spots on leaves that quickly enlarge to form purple-brown, oily blotches. White fungal growth may appear on leaf undersides in humid conditions. Stems and fruits develop dark lesions.",
+      "treatment_methods": ["Remove and destroy infected plants immediately", "Apply copper-based or specific late blight fungicides"],
+      "prevention_methods": ["Plant resistant varieties", "Increase spacing", "Avoid overhead irrigation", "Destroy volunteer plants"],
+      "affected_plants": ["Solanum lycopersicum 'Beefsteak'", "Solanum lycopersicum"]
+    }
+  ],
+  "companion_relationships": [
+    {
+      "plant_subject": "Solanum lycopersicum 'Beefsteak'",
+      "plant_object": "Ocimum basilicum",
+      "interactions": [
+        {
+          "interaction_type": "BEN",
+          "mechanism_description": "Basil repels tomato hornworm and improves tomato flavor."
+        }
+      ],
+      "notes": "Classic companion planting combination."
+    },
+    {
+      "plant_subject": "Solanum lycopersicum 'Beefsteak'",
+      "plant_object": "Tagetes patula",
+      "interactions": [
+        {
+          "interaction_type": "BEN",
+          "mechanism_description": "Marigolds repel nematodes and other soil pests."
+        }
+      ],
+      "notes": "Plant marigolds around the perimeter of tomato plants."
+    }
+  ]
+}

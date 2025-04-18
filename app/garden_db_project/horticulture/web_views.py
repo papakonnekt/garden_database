@@ -1,5 +1,7 @@
 import json
 import traceback
+import logging # Add logging import
+import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.db.models import Q
@@ -7,7 +9,12 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .models import Plant, Seed, Pest, Disease, Companionship, Region, SoilProfile, Fertilizer, CompanionPlantingInteraction
+from django.conf import settings
+from .models import Plant, Seed, Pest, Disease, Companionship, Region, SoilProfile, Fertilizer, CompanionPlantingInteraction, PlantPest, PlantDisease
+from .relationship_fixer import fix_all_relationships, fix_relationships_from_json
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class HomeView(TemplateView):
     template_name = 'horticulture/home.html'
@@ -63,6 +70,48 @@ class PlantDetailView(DetailView):
     model = Plant
     template_name = 'horticulture/plant_detail.html'
     context_object_name = 'plant'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        plant = self.object
+        logger.info(f"Fetching details for Plant ID: {plant.id}, Name: {plant.common_name}") # LOGGING ADDED
+
+        # Fetch companion plants
+        context['companionships'] = Companionship.objects.filter(
+            Q(plant_subject=plant) | Q(plant_object=plant)
+        ).select_related(
+            'plant_subject', 'plant_object'
+        ).prefetch_related('interactions') # Prefetch interactions
+
+        # Fetch pests associated with this plant
+        plant_pests_qs = PlantPest.objects.filter(
+            plant=plant
+        ).select_related('pest')
+        logger.info(f"Found {plant_pests_qs.count()} PlantPest records for Plant ID {plant.id}") # LOGGING ADDED
+        # Log the actual pest names if any found
+        if plant_pests_qs.exists():
+             pest_names = [pp.pest.common_name for pp in plant_pests_qs]
+             logger.info(f"Pest names: {pest_names}")
+        else:
+             logger.info("No pests found via PlantPest query.")
+
+        context['plant_pests'] = plant_pests_qs
+
+        # Fetch diseases associated with this plant
+        plant_diseases_qs = PlantDisease.objects.filter(
+            plant=plant
+        ).select_related('disease')
+        logger.info(f"Found {plant_diseases_qs.count()} PlantDisease records for Plant ID {plant.id}") # LOGGING ADDED
+        # Log the actual disease names if any found
+        if plant_diseases_qs.exists():
+             disease_names = [pd.disease.common_name for pd in plant_diseases_qs]
+             logger.info(f"Disease names: {disease_names}")
+        else:
+             logger.info("No diseases found via PlantDisease query.")
+
+        context['plant_diseases'] = plant_diseases_qs
+
+        return context
 
 class SeedListView(ListView):
     model = Seed
@@ -196,6 +245,94 @@ class CompanionListView(ListView):
 class SearchView(TemplateView):
     template_name = 'horticulture/search_results.html'
 
+
+class FixRelationshipsView(View):
+    template_name = 'horticulture/fix_relationships.html'
+
+    def get(self, request):
+        # Get a list of JSON files in the jsons directory
+        json_files = []
+        jsons_dir = os.path.join(settings.BASE_DIR, '..', 'jsons')
+
+        if os.path.exists(jsons_dir) and os.path.isdir(jsons_dir):
+            for file in os.listdir(jsons_dir):
+                if file.endswith('.json'):
+                    json_files.append(file)
+
+        return render(request, self.template_name, {'json_files': json_files})
+
+    def post(self, request):
+        file_option = request.POST.get('file_option', 'all')
+        result = {
+            'success': False,
+            'message': '',
+            'details': ''
+        }
+
+        # Get a list of JSON files for the template
+        json_files = []
+        jsons_dir = os.path.join(settings.BASE_DIR, '..', 'jsons')
+
+        if os.path.exists(jsons_dir) and os.path.isdir(jsons_dir):
+            for file in os.listdir(jsons_dir):
+                if file.endswith('.json'):
+                    json_files.append(file)
+
+        try:
+            if file_option == 'server':
+                # Get the selected server file
+                server_file = request.POST.get('server_file')
+                if not server_file:
+                    result['message'] = 'No server file selected'
+                    return render(request, self.template_name, {'result': result, 'json_files': json_files})
+
+                # Construct the full path to the JSON file
+                json_file_path = os.path.join(settings.BASE_DIR, '..', 'jsons', server_file)
+
+                if not os.path.exists(json_file_path):
+                    result['message'] = f'JSON file not found: {server_file}'
+                    return render(request, self.template_name, {'result': result, 'json_files': json_files})
+
+                pest_count, disease_count = fix_relationships_from_json(json_file_path=json_file_path)
+                result['success'] = True
+                result['message'] = 'Relationships fixed successfully!'
+                result['details'] = f'Fixed {pest_count} plant-pest relationships and {disease_count} plant-disease relationships from server file: {server_file}'
+
+            elif file_option == 'upload':
+                # Get the uploaded file
+                upload_file = request.FILES.get('upload_file')
+                if not upload_file:
+                    result['message'] = 'No file uploaded'
+                    return render(request, self.template_name, {'result': result, 'json_files': json_files})
+
+                try:
+                    # Parse the JSON data
+                    json_data = json.loads(upload_file.read().decode('utf-8'))
+
+                    # Fix relationships using the JSON data
+                    pest_count, disease_count = fix_relationships_from_json(json_data=json_data)
+                    result['success'] = True
+                    result['message'] = 'Relationships fixed successfully!'
+                    result['details'] = f'Fixed {pest_count} plant-pest relationships and {disease_count} plant-disease relationships from uploaded file: {upload_file.name}'
+                except json.JSONDecodeError:
+                    result['message'] = 'Invalid JSON format in uploaded file'
+                    return render(request, self.template_name, {'result': result, 'json_files': json_files})
+
+            else:  # file_option == 'all'
+                with transaction.atomic():
+                    fix_result = fix_all_relationships()
+                    result['success'] = True
+                    result['message'] = 'Relationships fixed successfully!'
+                    result['details'] = f"Fixed {fix_result['pest_fixed_count']} plant-pest relationships and {fix_result['disease_fixed_count']} plant-disease relationships."
+        except Exception as e:
+            result['message'] = f'Error fixing relationships: {str(e)}'
+            result['details'] = traceback.format_exc()
+
+        return render(request, self.template_name, {'result': result, 'json_files': json_files})
+
+    # Remove the get_context_data method as it's not needed for this view
+    # def get_context_data(self, **kwargs):
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('q', '')
@@ -273,6 +410,14 @@ class BulkImportView(View):
         try:
             # Read and parse JSON file
             data = json.loads(json_file.read().decode('utf-8'))
+            logger.info(f"Parsed JSON data type: {type(data).__name__}")
+
+            # If this is a comprehensive import but the data is a list, wrap it in a dict
+            # This handles the case where the JSON file is a list but the entity_type is 'comprehensive'
+            if entity_type == 'comprehensive' and isinstance(data, list):
+                logger.info("Converting list data to comprehensive format")
+                data = {"plants": data}
+                logger.info(f"Converted data keys: {list(data.keys())}")
 
             # Process the data based on entity type
             with transaction.atomic():
@@ -335,9 +480,23 @@ class BulkImportView(View):
                 elif entity_type == 'comprehensive':
                     # Handle the comprehensive format
                     if isinstance(data, dict):
+                        # Log the keys in the data for debugging
+                        logger.info(f"Comprehensive import data keys: {list(data.keys())}")
+
                         plants_data = data.get('plants', [])
+                        logger.info(f"Found {len(plants_data)} plants in the import data")
+
                         companionships_data = data.get('companion_relationships', [])
+                        logger.info(f"Found {len(companionships_data)} companion relationships in the import data")
+
                         pests_data = data.get('pests', [])
+                        logger.info(f"Found {len(pests_data)} pests in the import data")
+                        if pests_data:
+                            logger.info(f"First pest: {pests_data[0].get('common_name')}")
+                            logger.info(f"First pest affected plants: {pests_data[0].get('affected_plants', [])}")
+
+                        diseases_data = data.get('diseases', [])
+                        logger.info(f"Found {len(diseases_data)} diseases in the import data")
 
                         # Import plants first
                         if plants_data:
@@ -349,12 +508,17 @@ class BulkImportView(View):
                             result['total'] += len(pests_data)
                             self._import_pests(pests_data, update_existing, result)
 
+                        # Import diseases
+                        if diseases_data:
+                            result['total'] += len(diseases_data)
+                            self._import_diseases(diseases_data, update_existing, result)
+
                         # Import companionships last (since they depend on plants)
                         if companionships_data:
                             result['total'] += len(companionships_data)
                             self._import_companionships(companionships_data, update_existing, result)
                     else:
-                        result['message'] = 'Invalid JSON format for comprehensive import. Expected an object with plants, companion_relationships, and pests arrays.'
+                        result['message'] = 'Invalid JSON format for comprehensive import. Expected an object with plants, companion_relationships, pests, and diseases arrays.'
                         return render(request, self.template_name, {'result': result})
                 else:
                     result['message'] = f'Unsupported entity type: {entity_type}'
@@ -450,10 +614,16 @@ class BulkImportView(View):
                 result['skipped'] += 1
 
     def _import_pests(self, data, update_existing, result):
+        logger.info(f"Starting _import_pests with {len(data)} items")
         for item in data:
             try:
                 common_name = item.get('common_name')
-                affected_plants = item.pop('affected_plants', [])
+                logger.info(f"Processing pest: {common_name}")
+
+                # Make a copy of the item before popping to avoid modifying the original data
+                item_copy = item.copy()
+                affected_plants = item_copy.pop('affected_plants', [])
+                logger.info(f"Pest {common_name} has {len(affected_plants)} affected plants: {affected_plants}")
 
                 if not common_name:
                     result['errors'].append(f'Missing common_name in item: {item}')
@@ -462,32 +632,57 @@ class BulkImportView(View):
 
                 # Check if pest already exists
                 existing_pest = Pest.objects.filter(common_name=common_name).first()
+                logger.info(f"Existing pest found: {existing_pest is not None}")
 
                 if existing_pest and update_existing:
                     # Update existing pest
-                    for key, value in item.items():
+                    logger.info(f"Updating existing pest: {common_name}")
+                    for key, value in item_copy.items():
                         if hasattr(existing_pest, key) and key != 'id':
                             setattr(existing_pest, key, value)
                     existing_pest.save()
+                    logger.info(f"Saved updated pest: {common_name}")
 
-                    # Update plant relationships
+                    # Update plant relationships using the through model
                     if affected_plants:
-                        existing_pest.plants.clear()
+                        logger.info(f"Updating plant relationships for pest {common_name} with {len(affected_plants)} plants")
+                        # First, remove existing relationships for this pest via the through model
+                        deleted_count = PlantPest.objects.filter(pest=existing_pest).delete()
+                        logger.info(f"Deleted {deleted_count} existing plant-pest relationships")
+
+                        # Then, add the new relationships
                         for plant_name in affected_plants:
+                            logger.info(f"Looking for plant: {plant_name}")
                             plant = Plant.objects.filter(scientific_name=plant_name).first()
                             if plant:
-                                existing_pest.plants.add(plant)
+                                logger.info(f"Found plant {plant_name}, creating PlantPest link")
+                                link, created = PlantPest.objects.get_or_create(plant=plant, pest=existing_pest)
+                                logger.info(f"PlantPest link created: {created}, ID: {link.id if link else 'None'}")
+                            else:
+                                logger.error(f"Plant not found for pest {common_name}: {plant_name}")
+                                result['errors'].append(f'Plant not found for pest {common_name}: {plant_name}')
+
 
                     result['updated'] += 1
                 elif not existing_pest:
                     # Create new pest
-                    pest = Pest.objects.create(**item)
+                    logger.info(f"Creating new pest: {common_name}")
+                    pest = Pest.objects.create(**item_copy)
+                    logger.info(f"Created new pest: {common_name} with ID {pest.id}")
 
-                    # Add plant relationships
+                    # Add plant relationships using the through model
+                    logger.info(f"Linking pest {common_name} to {len(affected_plants)} plants")
                     for plant_name in affected_plants:
+                        logger.info(f"Looking for plant: {plant_name}")
                         plant = Plant.objects.filter(scientific_name=plant_name).first()
                         if plant:
-                            pest.plants.add(plant)
+                            logger.info(f"Found plant {plant_name}, creating PlantPest link")
+                            link, created = PlantPest.objects.get_or_create(plant=plant, pest=pest)
+                            logger.info(f"PlantPest link created: {created}, ID: {link.id}")
+                        else:
+                            logger.error(f"Plant not found for new pest {common_name}: {plant_name}")
+                            result['errors'].append(f'Plant not found for new pest {common_name}: {plant_name}')
+
 
                     result['created'] += 1
                 else:
@@ -498,10 +693,16 @@ class BulkImportView(View):
                 result['skipped'] += 1
 
     def _import_diseases(self, data, update_existing, result):
+        logger.info(f"Starting _import_diseases with {len(data)} items")
         for item in data:
             try:
                 common_name = item.get('common_name')
-                affected_plants = item.pop('affected_plants', [])
+                logger.info(f"Processing disease: {common_name}")
+
+                # Make a copy of the item before popping to avoid modifying the original data
+                item_copy = item.copy()
+                affected_plants = item_copy.pop('affected_plants', [])
+                logger.info(f"Disease {common_name} has {len(affected_plants)} affected plants: {affected_plants}")
 
                 if not common_name:
                     result['errors'].append(f'Missing common_name in item: {item}')
@@ -510,32 +711,55 @@ class BulkImportView(View):
 
                 # Check if disease already exists
                 existing_disease = Disease.objects.filter(common_name=common_name).first()
+                logger.info(f"Existing disease found: {existing_disease is not None}")
 
                 if existing_disease and update_existing:
                     # Update existing disease
-                    for key, value in item.items():
+                    logger.info(f"Updating existing disease: {common_name}")
+                    for key, value in item_copy.items():
                         if hasattr(existing_disease, key) and key != 'id':
                             setattr(existing_disease, key, value)
                     existing_disease.save()
+                    logger.info(f"Saved updated disease: {common_name}")
 
-                    # Update plant relationships
+                    # Update plant relationships using the through model
                     if affected_plants:
-                        existing_disease.plants.clear()
+                        logger.info(f"Updating plant relationships for disease {common_name} with {len(affected_plants)} plants")
+                        # First, remove existing relationships for this disease via the through model
+                        deleted_count = PlantDisease.objects.filter(disease=existing_disease).delete()
+                        logger.info(f"Deleted {deleted_count} existing plant-disease relationships")
+
+                        # Then, add the new relationships
                         for plant_name in affected_plants:
+                            logger.info(f"Looking for plant: {plant_name}")
                             plant = Plant.objects.filter(scientific_name=plant_name).first()
                             if plant:
-                                existing_disease.plants.add(plant)
+                                logger.info(f"Found plant {plant_name}, creating PlantDisease link")
+                                link, created = PlantDisease.objects.get_or_create(plant=plant, disease=existing_disease)
+                                logger.info(f"PlantDisease link created: {created}, ID: {link.id if link else 'None'}")
+                            else:
+                                logger.error(f"Plant not found for disease {common_name}: {plant_name}")
+                                result['errors'].append(f'Plant not found for disease {common_name}: {plant_name}')
 
                     result['updated'] += 1
                 elif not existing_disease:
                     # Create new disease
-                    disease = Disease.objects.create(**item)
+                    logger.info(f"Creating new disease: {common_name}")
+                    disease = Disease.objects.create(**item_copy)
+                    logger.info(f"Created new disease: {common_name} with ID {disease.id}")
 
-                    # Add plant relationships
+                    # Add plant relationships using the through model
+                    logger.info(f"Linking disease {common_name} to {len(affected_plants)} plants")
                     for plant_name in affected_plants:
+                        logger.info(f"Looking for plant: {plant_name}")
                         plant = Plant.objects.filter(scientific_name=plant_name).first()
                         if plant:
-                            disease.plants.add(plant)
+                            logger.info(f"Found plant {plant_name}, creating PlantDisease link")
+                            link, created = PlantDisease.objects.get_or_create(plant=plant, disease=disease)
+                            logger.info(f"PlantDisease link created: {created}, ID: {link.id if link else 'None'}")
+                        else:
+                            logger.error(f"Plant not found for new disease {common_name}: {plant_name}")
+                            result['errors'].append(f'Plant not found for new disease {common_name}: {plant_name}')
 
                     result['created'] += 1
                 else:
@@ -687,11 +911,20 @@ class BulkImportView(View):
                             interaction_type = interaction_data.get('interaction_type')
                             mechanism_description = interaction_data.get('mechanism_description')
 
-                            interaction = CompanionPlantingInteraction.objects.create(
-                                interaction_type=interaction_type,
-                                mechanism_description=mechanism_description,
-                                interaction_code=f"{plant_subject.common_name}_{plant_object.common_name}_{interaction_type}"
-                            )
+                            # Generate interaction code consistently with tasks.py
+                            inter_code = f"{interaction_type}_{mechanism_description[:20]}".replace(" ", "_").upper() if interaction_type and mechanism_description else None
+                            if inter_code:
+                                interaction, created = CompanionPlantingInteraction.objects.get_or_create(
+                                    interaction_code=inter_code,
+                                    defaults={
+                                        'interaction_type': interaction_type,
+                                        'mechanism_description': mechanism_description
+                                    }
+                                )
+                            else:
+                                # Handle cases where type or description might be missing, though ideally validation prevents this
+                                result['errors'].append(f'Missing interaction_type or mechanism_description for companionship {plant_subject_name}-{plant_object_name}: {interaction_data}')
+                                continue # Skip adding this interaction
                             existing_companionship.interactions.add(interaction)
 
                     result['updated'] += 1
@@ -704,11 +937,20 @@ class BulkImportView(View):
                         interaction_type = interaction_data.get('interaction_type')
                         mechanism_description = interaction_data.get('mechanism_description')
 
-                        interaction = CompanionPlantingInteraction.objects.create(
-                            interaction_type=interaction_type,
-                            mechanism_description=mechanism_description,
-                            interaction_code=f"{plant_subject.common_name}_{plant_object.common_name}_{interaction_type}"
-                        )
+                        # Generate interaction code consistently with tasks.py
+                        inter_code = f"{interaction_type}_{mechanism_description[:20]}".replace(" ", "_").upper() if interaction_type and mechanism_description else None
+                        if inter_code:
+                            interaction, created = CompanionPlantingInteraction.objects.get_or_create(
+                                interaction_code=inter_code,
+                                defaults={
+                                    'interaction_type': interaction_type,
+                                    'mechanism_description': mechanism_description
+                                }
+                            )
+                        else:
+                            # Handle cases where type or description might be missing
+                            result['errors'].append(f'Missing interaction_type or mechanism_description for companionship {plant_subject_name}-{plant_object_name}: {interaction_data}')
+                            continue # Skip adding this interaction
                         companionship.interactions.add(interaction)
 
                     result['created'] += 1
