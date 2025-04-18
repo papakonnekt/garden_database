@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 # garden_db_project/horticulture/schema.py
 import graphene
 from graphene_django import DjangoObjectType
@@ -8,7 +10,7 @@ from django.utils import timezone # Added for timestamping reviews
 
 # Import all models needed for types and mutations
 from .models import (
-    Region, SoilProfile, Plant, User, Fertilizer, Pest, Disease, Seed,
+    Region, SoilProfile, Plant, Fertilizer, Pest, Disease, Seed,
     Companionship, PlantPest, PlantDisease, UserContribution,
     CompanionPlantingInteraction
 )

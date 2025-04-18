@@ -14,9 +14,10 @@ from .models import (
     CompanionPlantingInteraction
 )
 from .serializers import (
-    RegionSerializer, SoilProfileSerializer, PlantSerializer, UserSerializer,
-    FertilizerSerializer, PestSerializer, DiseaseSerializer, SeedSerializer,
-    CompanionshipSerializer, PlantPestSerializer, PlantDiseaseSerializer,
+    RegionSerializer, SoilProfileSerializer, PlantSerializer, PlantDetailSerializer, # Added PlantDetailSerializer
+    UserSerializer, FertilizerSerializer, PestSerializer, DiseaseSerializer,
+    SeedSerializer, CompanionshipSerializer, PlantPestSerializer,
+    PlantDiseaseSerializer, UserContributionSerializer,
     UserContributionSerializer, CompanionPlantingInteractionSerializer
 )
 from .permissions import IsAuthenticatedCreateOrAdminReadUpdateDelete # Import the new class
@@ -42,10 +43,62 @@ class SoilProfileViewSet(viewsets.ModelViewSet):
 class PlantViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows plants to be viewed or edited.
+    Uses PlantDetailSerializer for retrieve action.
     """
-    queryset = Plant.objects.all()
+    queryset = Plant.objects.all().prefetch_related(
+        'pests', 'diseases', 'companion_relationships_subject__interactions',
+        'companion_relationships_subject__plant_object',
+        'companion_relationships_object__interactions',
+        'companion_relationships_object__plant_subject'
+    ).select_related('soil_preference', 'suitable_region') # Optimize query
+    # Default serializer_class remains PlantSerializer for list view etc.
     serializer_class = PlantSerializer
     # Add permission_classes later if needed
+
+    def get_serializer_class(self):
+        """
+        Return the appropriate serializer class based on the action.
+        """
+        if self.action == 'retrieve':
+            return PlantDetailSerializer
+        return super().get_serializer_class() # Use default (PlantSerializer) for other actions
+
+
+    @action(detail=True, methods=['get'])
+    def compatibility(self, request, pk=None):
+        """
+        Returns compatibility data for a specific plant, including pH range
+        and companion planting information.
+        """
+        plant = self.get_object()
+        companions_data = []
+
+        # Query for companionships where the plant is plant1
+        companionships1 = Companionship.objects.filter(plant1=plant).select_related('plant2', 'interaction_type')
+        for comp in companionships1:
+            companions_data.append({
+                'companion_plant_name': comp.plant2.name,
+                'interaction_type': comp.interaction_type.name
+            })
+
+        # Query for companionships where the plant is plant2
+        companionships2 = Companionship.objects.filter(plant2=plant).select_related('plant1', 'interaction_type')
+        for comp in companionships2:
+            companions_data.append({
+                'companion_plant_name': comp.plant1.name,
+                'interaction_type': comp.interaction_type.name
+            })
+
+        response_data = {
+            'plant_id': plant.pk,
+            'plant_name': plant.name,
+            'soil_ph_min': plant.soil_ph_min,
+            'soil_ph_max': plant.soil_ph_max,
+            'companions': companions_data
+        }
+
+        return Response(response_data)
+        # pass # Placeholder to indicate the rest of the method is unchanged
 
 # --- Added ViewSets ---
 
